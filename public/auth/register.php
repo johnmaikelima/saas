@@ -23,6 +23,16 @@ $dados = [
     'login' => '',
 ];
 
+// Plano selecionado
+$planoSelecionado = sanitize($_GET['plano'] ?? $_POST['plano'] ?? 'free');
+$planosInfo = [
+    'free'  => ['nome' => 'Free',  'preco' => 'Grátis',       'valor' => 0,     'cor' => '#10b981'],
+    'basic' => ['nome' => 'Basic', 'preco' => 'R$ 49,90/mês', 'valor' => 49.90, 'cor' => '#4f46e5'],
+    'pro'   => ['nome' => 'Pro',   'preco' => 'R$ 99,90/mês', 'valor' => 99.90, 'cor' => '#f59e0b'],
+];
+if (!isset($planosInfo[$planoSelecionado])) $planoSelecionado = 'free';
+$planoAtual = $planosInfo[$planoSelecionado];
+
 // Rate limit: 3 tentativas por 10 minutos
 if (rateLimited('register', 3, 600)) {
     $bloqueado = true;
@@ -107,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
                 $pdo->beginTransaction();
 
                 // 1. Criar tenant
-                $stmt = $pdo->prepare("INSERT INTO tenants (razao_social, nome_fantasia, cnpj, email, telefone, cidade, estado, plano, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'free', 'ativo')");
+                $stmt = $pdo->prepare("INSERT INTO tenants (razao_social, nome_fantasia, cnpj, email, telefone, cidade, estado, plano, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ativo')");
                 $stmt->execute([
                     $dados['nome_empresa'],
                     $dados['nome_fantasia'],
@@ -116,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
                     $dados['whatsapp'],
                     $dados['cidade'],
                     $dados['uf'],
+                    $planoSelecionado,
                 ]);
                 $tenantId = (int) $pdo->lastInsertId();
 
@@ -350,15 +361,39 @@ $ufs = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','P
             </div>
         </div>
 
-        <!-- Benefícios do plano free -->
-        <div class="benefits-box">
-            <h6><i class="fas fa-gift me-2"></i>Plano Free - Comece agora!</h6>
-            <div class="benefit-item"><i class="fas fa-check"></i> PDV completo com controle de caixa</div>
-            <div class="benefit-item"><i class="fas fa-check"></i> Cadastro de produtos e categorias</div>
-            <div class="benefit-item"><i class="fas fa-check"></i> Controle de estoque</div>
-            <div class="benefit-item"><i class="fas fa-check"></i> Cadastro de clientes</div>
-            <div class="benefit-item"><i class="fas fa-check"></i> Relatórios de vendas</div>
-            <div class="benefit-item"><i class="fas fa-check"></i> Acesso de qualquer dispositivo</div>
+        <!-- Plano selecionado -->
+        <div class="benefits-box" style="border-left: 4px solid <?= $planoAtual['cor'] ?>;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0"><i class="fas fa-tag me-2"></i>Plano <?= e($planoAtual['nome']) ?></h6>
+                <span class="fw-bold" style="color: <?= $planoAtual['cor'] ?>; font-size: 1.2rem;"><?= e($planoAtual['preco']) ?></span>
+            </div>
+            <?php if ($planoSelecionado === 'free'): ?>
+                <div class="benefit-item"><i class="fas fa-check"></i> Até 50 produtos</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> 1 usuário</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> PDV básico</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> Relatórios simples</div>
+            <?php elseif ($planoSelecionado === 'basic'): ?>
+                <div class="benefit-item"><i class="fas fa-check"></i> Até 500 produtos</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> 3 usuários</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> PDV completo + estoque</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> Gestão de clientes</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> Relatórios avançados</div>
+            <?php else: ?>
+                <div class="benefit-item"><i class="fas fa-check"></i> Produtos ilimitados</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> Usuários ilimitados</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> PDV completo + estoque</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> Gestão de clientes</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> Relatórios avançados</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> Suporte prioritário 24/7</div>
+            <?php endif; ?>
+            <?php if ($planoSelecionado !== 'free'): ?>
+                <div class="mt-2"><small class="text-muted">O pagamento será configurado após o cadastro.</small></div>
+            <?php endif; ?>
+            <div class="mt-2">
+                <a href="/" class="text-decoration-none" style="font-size: 0.8rem; color: <?= $planoAtual['cor'] ?>;">
+                    <i class="fas fa-arrow-left me-1"></i>Trocar plano
+                </a>
+            </div>
         </div>
 
         <?php if ($erro): ?>
@@ -381,6 +416,7 @@ $ufs = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','P
 
         <form method="POST" autocomplete="off" id="formRegister">
             <?= csrfField() ?>
+            <input type="hidden" name="plano" value="<?= e($planoSelecionado) ?>">
 
             <!-- Dados da Empresa -->
             <div class="section-title"><i class="fas fa-building me-2"></i>Dados da Empresa</div>

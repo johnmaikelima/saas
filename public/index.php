@@ -13,59 +13,52 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
-            --accent: #06b6d4;
-            --bg-dark: #0f172a;
-            --bg-darker: #020617;
-            --bg-card: #1e293b;
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #6366f1;
+            --accent: #0ea5e9;
+            --bg-light: #ffffff;
+            --bg-gray: #f8fafc;
+            --bg-gray2: #f1f5f9;
+            --text-dark: #1e293b;
+            --text-body: #475569;
             --text-muted: #94a3b8;
+            --border: #e2e8f0;
             --success: #10b981;
             --warning: #f59e0b;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg-dark);
-            color: #e2e8f0;
+            background: var(--bg-light);
+            color: var(--text-body);
             overflow-x: hidden;
         }
 
         /* ===== NAVBAR ===== */
         .navbar-landing {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            border-bottom: 1px solid var(--border);
             padding: 1rem 0;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             z-index: 1000;
             transition: all 0.3s ease;
         }
 
         .navbar-landing.scrolled {
             padding: 0.6rem 0;
-            background: rgba(15, 23, 42, 0.95);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
         }
 
         .navbar-brand-custom {
             font-size: 1.5rem;
             font-weight: 800;
-            color: #fff !important;
+            color: var(--text-dark) !important;
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -73,20 +66,12 @@
         }
 
         .navbar-brand-custom i {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--primary);
             font-size: 1.6rem;
         }
 
-        .navbar-brand-custom span {
-            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
         .nav-link-custom {
-            color: var(--text-muted) !important;
+            color: var(--text-body) !important;
             font-weight: 500;
             font-size: 0.9rem;
             padding: 0.5rem 1rem !important;
@@ -94,13 +79,11 @@
             text-decoration: none;
         }
 
-        .nav-link-custom:hover {
-            color: #fff !important;
-        }
+        .nav-link-custom:hover { color: var(--primary) !important; }
 
         .btn-nav-login {
-            border: 1px solid rgba(99, 102, 241, 0.5);
-            color: var(--primary-light) !important;
+            border: 1px solid var(--border);
+            color: var(--text-body) !important;
             border-radius: 8px;
             padding: 0.45rem 1.2rem !important;
             font-weight: 600;
@@ -110,13 +93,13 @@
         }
 
         .btn-nav-login:hover {
-            background: rgba(99, 102, 241, 0.1);
+            background: var(--bg-gray);
             border-color: var(--primary-light);
-            color: #fff !important;
+            color: var(--primary) !important;
         }
 
         .btn-nav-register {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: #fff !important;
             border: none;
             border-radius: 8px;
@@ -128,9 +111,9 @@
         }
 
         .btn-nav-register:hover {
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            background: var(--primary-dark);
             transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
         }
 
         /* ===== HERO ===== */
@@ -138,7 +121,7 @@
             min-height: 100vh;
             display: flex;
             align-items: center;
-            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 40%, #1a1e3a 100%);
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f4f8 50%, #f8fafc 100%);
             position: relative;
             overflow: hidden;
             padding-top: 80px;
@@ -147,44 +130,27 @@
         .hero-section::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .hero-section::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            left: -10%;
+            top: -30%;
+            right: -15%;
             width: 600px;
             height: 600px;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.06) 0%, transparent 70%);
             border-radius: 50%;
-            pointer-events: none;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: rgba(79, 70, 229, 0.08);
+            border: 1px solid rgba(79, 70, 229, 0.15);
             border-radius: 50px;
             padding: 0.4rem 1.2rem;
             font-size: 0.85rem;
-            color: var(--primary-light);
-            font-weight: 500;
+            color: var(--primary);
+            font-weight: 600;
             margin-bottom: 1.5rem;
             animation: fadeInDown 0.8s ease;
-        }
-
-        .hero-badge i {
-            font-size: 0.75rem;
         }
 
         .hero-title {
@@ -192,18 +158,19 @@
             font-weight: 900;
             line-height: 1.1;
             margin-bottom: 1.5rem;
+            color: var(--text-dark);
             animation: fadeInUp 0.8s ease;
         }
 
         .hero-title .gradient-text {
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .hero-subtitle {
             font-size: 1.2rem;
-            color: var(--text-muted);
+            color: var(--text-body);
             line-height: 1.7;
             margin-bottom: 2.5rem;
             max-width: 520px;
@@ -218,7 +185,7 @@
         }
 
         .btn-hero-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: #fff;
             border: none;
             border-radius: 12px;
@@ -230,19 +197,20 @@
             align-items: center;
             gap: 0.6rem;
             transition: all 0.3s;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.25);
         }
 
         .btn-hero-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 8px 30px rgba(79, 70, 229, 0.35);
             color: #fff;
+            background: var(--primary-dark);
         }
 
         .btn-hero-secondary {
-            background: transparent;
-            color: var(--text-muted);
-            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: #fff;
+            color: var(--text-body);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 0.9rem 2rem;
             font-size: 1.05rem;
@@ -256,8 +224,8 @@
 
         .btn-hero-secondary:hover {
             border-color: var(--primary-light);
-            color: #fff;
-            background: rgba(99, 102, 241, 0.05);
+            color: var(--primary);
+            background: #fff;
         }
 
         .hero-stats {
@@ -267,16 +235,12 @@
             animation: fadeInUp 0.8s ease 0.6s both;
         }
 
-        .hero-stat {
-            text-align: center;
-        }
+        .hero-stat { text-align: center; }
 
         .hero-stat-number {
             font-size: 1.8rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #fff, var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--primary);
         }
 
         .hero-stat-label {
@@ -291,11 +255,11 @@
         }
 
         .hero-mockup {
-            background: linear-gradient(135deg, var(--bg-card), #263352);
+            background: #fff;
             border-radius: 20px;
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            border: 1px solid var(--border);
             padding: 2rem;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
             position: relative;
         }
 
@@ -306,12 +270,7 @@
             margin-bottom: 1.5rem;
         }
 
-        .mockup-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
+        .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
         .mockup-dot.red { background: #ef4444; }
         .mockup-dot.yellow { background: #f59e0b; }
         .mockup-dot.green { background: #10b981; }
@@ -323,95 +282,55 @@
         }
 
         .mockup-card {
-            background: rgba(15, 23, 42, 0.6);
+            background: var(--bg-gray);
             border-radius: 12px;
             padding: 1.2rem;
-            border: 1px solid rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--border);
         }
 
-        .mockup-card-icon {
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .mockup-card-value {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .mockup-card-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
+        .mockup-card-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .mockup-card-value { font-size: 1.3rem; font-weight: 700; color: var(--text-dark); }
+        .mockup-card-label { font-size: 0.75rem; color: var(--text-muted); }
 
         .mockup-card.highlight {
-            border-color: rgba(99, 102, 241, 0.3);
-            background: rgba(99, 102, 241, 0.05);
+            border-color: rgba(79, 70, 229, 0.2);
+            background: rgba(79, 70, 229, 0.04);
         }
 
         .floating-badge {
             position: absolute;
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            background: #fff;
+            border: 1px solid var(--border);
             border-radius: 14px;
             padding: 0.8rem 1.2rem;
             display: flex;
             align-items: center;
             gap: 0.7rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             animation: float 3s ease-in-out infinite;
         }
 
-        .floating-badge.badge-1 {
-            top: -15px;
-            right: -20px;
-        }
+        .floating-badge.badge-1 { top: -15px; right: -20px; }
+        .floating-badge.badge-2 { bottom: -15px; left: -20px; animation-delay: 1.5s; }
+        .floating-badge i { font-size: 1.2rem; }
+        .floating-badge .fb-text { font-size: 0.8rem; font-weight: 600; color: var(--text-dark); }
+        .floating-badge .fb-sub { font-size: 0.7rem; color: var(--text-muted); }
 
-        .floating-badge.badge-2 {
-            bottom: -15px;
-            left: -20px;
-            animation-delay: 1.5s;
-        }
-
-        .floating-badge i {
-            font-size: 1.2rem;
-        }
-
-        .floating-badge .fb-text {
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .floating-badge .fb-sub {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-
-        /* ===== SECTION GENERAL ===== */
-        section {
-            padding: 6rem 0;
-        }
-
-        .section-dark {
-            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-card) 100%);
-        }
-
-        .section-darker {
-            background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-dark) 100%);
-        }
+        /* ===== SECTIONS ===== */
+        section { padding: 6rem 0; }
+        .section-white { background: var(--bg-light); }
+        .section-gray { background: var(--bg-gray); }
 
         .section-label {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            background: rgba(79, 70, 229, 0.08);
+            border: 1px solid rgba(79, 70, 229, 0.12);
             border-radius: 50px;
             padding: 0.35rem 1rem;
             font-size: 0.8rem;
-            color: var(--primary-light);
+            color: var(--primary);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -422,20 +341,20 @@
             font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 1rem;
-            color: #fff;
+            color: var(--text-dark);
         }
 
         .section-subtitle {
             font-size: 1.1rem;
-            color: var(--text-muted);
+            color: var(--text-body);
             max-width: 600px;
             margin: 0 auto 3rem;
         }
 
         /* ===== FEATURES ===== */
         .feature-card {
-            background: linear-gradient(135deg, var(--bg-card), #1a2744);
-            border: 1px solid rgba(99, 102, 241, 0.1);
+            background: #fff;
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 2rem;
             height: 100%;
@@ -447,9 +366,7 @@
         .feature-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 3px;
             background: linear-gradient(90deg, var(--primary), var(--accent));
             opacity: 0;
@@ -458,13 +375,11 @@
 
         .feature-card:hover {
             transform: translateY(-8px);
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(79, 70, 229, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
         }
 
-        .feature-card:hover::before {
-            opacity: 1;
-        }
+        .feature-card:hover::before { opacity: 1; }
 
         .feature-icon {
             width: 60px;
@@ -475,28 +390,17 @@
             justify-content: center;
             font-size: 1.5rem;
             margin-bottom: 1.2rem;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(6, 182, 212, 0.1));
-            color: var(--primary-light);
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(14, 165, 233, 0.08));
+            color: var(--primary);
         }
 
-        .feature-card h5 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin-bottom: 0.6rem;
-            color: #fff;
-        }
-
-        .feature-card p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin: 0;
-        }
+        .feature-card h5 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--text-dark); }
+        .feature-card p { font-size: 0.9rem; color: var(--text-body); line-height: 1.6; margin: 0; }
 
         /* ===== PRICING ===== */
         .pricing-card {
-            background: linear-gradient(135deg, var(--bg-card), #1a2744);
-            border: 1px solid rgba(99, 102, 241, 0.1);
+            background: #fff;
+            border: 1px solid var(--border);
             border-radius: 24px;
             padding: 2.5rem 2rem;
             text-align: center;
@@ -509,26 +413,23 @@
 
         .pricing-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
         }
 
         .pricing-card.featured {
             border-color: var(--primary);
-            background: linear-gradient(135deg, #1e2a4a, #1a2744);
-            box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
+            box-shadow: 0 0 0 1px var(--primary), 0 10px 40px rgba(79, 70, 229, 0.12);
             transform: scale(1.05);
         }
 
-        .pricing-card.featured:hover {
-            transform: scale(1.05) translateY(-8px);
-        }
+        .pricing-card.featured:hover { transform: scale(1.05) translateY(-8px); }
 
         .pricing-popular {
             position: absolute;
             top: -14px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: var(--primary);
             color: #fff;
             font-size: 0.75rem;
             font-weight: 700;
@@ -538,79 +439,36 @@
             letter-spacing: 0.5px;
         }
 
-        .pricing-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: #fff;
-        }
-
-        .pricing-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
+        .pricing-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-dark); }
+        .pricing-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; }
 
         .pricing-price {
             font-size: 3rem;
             font-weight: 900;
-            color: #fff;
+            color: var(--text-dark);
             line-height: 1;
             margin-bottom: 0.3rem;
         }
 
-        .pricing-price .currency {
-            font-size: 1.3rem;
-            font-weight: 600;
-            vertical-align: super;
-        }
+        .pricing-price .currency { font-size: 1.3rem; font-weight: 600; vertical-align: super; }
+        .pricing-price .period { font-size: 1rem; font-weight: 400; color: var(--text-muted); }
+        .pricing-from { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem; }
 
-        .pricing-price .period {
-            font-size: 1rem;
-            font-weight: 400;
-            color: var(--text-muted);
-        }
-
-        .pricing-from {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
-
-        .pricing-features {
-            list-style: none;
-            padding: 0;
-            margin: 1.5rem 0;
-            text-align: left;
-            flex-grow: 1;
-        }
+        .pricing-features { list-style: none; padding: 0; margin: 1.5rem 0; text-align: left; flex-grow: 1; }
 
         .pricing-features li {
             padding: 0.5rem 0;
             font-size: 0.9rem;
-            color: #cbd5e1;
+            color: var(--text-body);
             display: flex;
             align-items: center;
             gap: 0.7rem;
         }
 
-        .pricing-features li i {
-            font-size: 0.8rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        .pricing-features li i.fa-check {
-            color: var(--success);
-        }
-
-        .pricing-features li i.fa-xmark {
-            color: #475569;
-        }
-
-        .pricing-features li.disabled {
-            color: #475569;
-        }
+        .pricing-features li i { font-size: 0.8rem; width: 20px; text-align: center; }
+        .pricing-features li i.fa-check { color: var(--success); }
+        .pricing-features li i.fa-xmark { color: #cbd5e1; }
+        .pricing-features li.disabled { color: #cbd5e1; }
 
         .btn-pricing {
             display: block;
@@ -625,49 +483,48 @@
         }
 
         .btn-pricing-outline {
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            color: var(--primary-light);
+            border: 1px solid var(--border);
+            color: var(--primary);
             background: transparent;
         }
 
         .btn-pricing-outline:hover {
-            background: rgba(99, 102, 241, 0.1);
+            background: var(--bg-gray);
             border-color: var(--primary-light);
-            color: #fff;
+            color: var(--primary-dark);
         }
 
         .btn-pricing-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: #fff;
             border: none;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
         }
 
         .btn-pricing-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.35);
             color: #fff;
+            background: var(--primary-dark);
         }
 
         /* ===== FAQ ===== */
         .faq-item {
-            background: linear-gradient(135deg, var(--bg-card), #1a2744);
-            border: 1px solid rgba(99, 102, 241, 0.1);
+            background: #fff;
+            border: 1px solid var(--border);
             border-radius: 16px;
             margin-bottom: 1rem;
             overflow: hidden;
             transition: all 0.3s;
         }
 
-        .faq-item:hover {
-            border-color: rgba(99, 102, 241, 0.25);
-        }
+        .faq-item:hover { border-color: rgba(79, 70, 229, 0.2); }
 
         .faq-question {
             width: 100%;
             background: none;
             border: none;
-            color: #fff;
+            color: var(--text-dark);
             padding: 1.3rem 1.5rem;
             font-size: 1rem;
             font-weight: 600;
@@ -680,40 +537,17 @@
             font-family: 'Inter', sans-serif;
         }
 
-        .faq-question:hover {
-            color: var(--primary-light);
-        }
+        .faq-question:hover { color: var(--primary); }
+        .faq-question i { transition: transform 0.3s; color: var(--primary); }
+        .faq-question.active i { transform: rotate(180deg); }
 
-        .faq-question i {
-            transition: transform 0.3s;
-            color: var(--primary-light);
-        }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
+        .faq-answer.open { max-height: 300px; }
+        .faq-answer p { padding: 0 1.5rem 1.3rem; color: var(--text-body); line-height: 1.7; font-size: 0.95rem; margin: 0; }
 
-        .faq-question.active i {
-            transform: rotate(180deg);
-        }
-
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease, padding 0.4s ease;
-        }
-
-        .faq-answer.open {
-            max-height: 300px;
-        }
-
-        .faq-answer p {
-            padding: 0 1.5rem 1.3rem;
-            color: var(--text-muted);
-            line-height: 1.7;
-            font-size: 0.95rem;
-            margin: 0;
-        }
-
-        /* ===== CTA SECTION ===== */
+        /* ===== CTA ===== */
         .cta-section {
-            background: linear-gradient(135deg, var(--primary-dark), #3730a3);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             position: relative;
             overflow: hidden;
         }
@@ -721,26 +555,14 @@
         .cta-section::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            top: -50%; right: -20%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
             border-radius: 50%;
         }
 
-        .cta-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 1rem;
-        }
-
-        .cta-text {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 2rem;
-        }
+        .cta-title { font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
+        .cta-text { font-size: 1.1rem; color: rgba(255,255,255,0.85); margin-bottom: 2rem; }
 
         .btn-cta {
             background: #fff;
@@ -759,14 +581,13 @@
 
         .btn-cta:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             color: var(--primary-dark);
         }
 
         /* ===== FOOTER ===== */
         .footer {
-            background: var(--bg-darker);
-            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            background: var(--text-dark);
             padding: 3rem 0 1.5rem;
         }
 
@@ -780,16 +601,8 @@
             margin-bottom: 0.8rem;
         }
 
-        .footer-brand i {
-            color: var(--primary-light);
-        }
-
-        .footer-desc {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            max-width: 300px;
-        }
+        .footer-brand i { color: var(--primary-light); }
+        .footer-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; max-width: 300px; }
 
         .footer-title {
             font-size: 0.85rem;
@@ -800,56 +613,25 @@
             margin-bottom: 1rem;
         }
 
-        .footer-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s;
-        }
-
-        .footer-links a:hover {
-            color: var(--primary-light);
-        }
+        .footer-links { list-style: none; padding: 0; margin: 0; }
+        .footer-links li { margin-bottom: 0.5rem; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--primary-light); }
 
         .footer-bottom {
-            border-top: 1px solid rgba(99, 102, 241, 0.08);
+            border-top: 1px solid rgba(255,255,255,0.08);
             margin-top: 2rem;
             padding-top: 1.5rem;
             text-align: center;
-            color: #475569;
+            color: #64748b;
             font-size: 0.85rem;
         }
 
         /* ===== ANIMATIONS ===== */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInRight {
-            from { opacity: 0; transform: translateX(40px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
         .animate-on-scroll {
             opacity: 0;
@@ -857,10 +639,7 @@
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .animate-on-scroll.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 991px) {
@@ -881,13 +660,12 @@
             .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; }
         }
 
-        /* ===== HAMBURGER ===== */
         .navbar-toggler-custom {
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            border: 1px solid var(--border);
             padding: 0.4rem 0.7rem;
             border-radius: 8px;
             background: none;
-            color: #fff;
+            color: var(--text-dark);
             font-size: 1.2rem;
         }
     </style>
@@ -900,7 +678,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <a href="#" class="navbar-brand-custom">
                 <i class="fas fa-bolt"></i>
-                <span>PDV Pro</span>
+                PDV Pro
             </a>
 
             <button class="navbar-toggler-custom d-lg-none" onclick="document.getElementById('navMenu').classList.toggle('show')" aria-label="Menu">
@@ -930,7 +708,7 @@
     </div>
 </nav>
 
-<!-- Hero Section -->
+<!-- Hero -->
 <section class="hero-section">
     <div class="container">
         <div class="row align-items-center">
@@ -948,7 +726,7 @@
                     Simples, rápido e acessível de qualquer dispositivo.
                 </p>
                 <div class="hero-actions">
-                    <a href="/auth/register.php" class="btn-hero-primary">
+                    <a href="/auth/register.php?plano=free" class="btn-hero-primary">
                         <i class="fas fa-rocket"></i> Começar Grátis
                     </a>
                     <a href="/auth/login.php" class="btn-hero-secondary">
@@ -1008,7 +786,7 @@
                             </div>
                         </div>
                         <div class="floating-badge badge-2">
-                            <i class="fas fa-chart-line" style="color: var(--primary-light);"></i>
+                            <i class="fas fa-chart-line" style="color: var(--primary);"></i>
                             <div>
                                 <div class="fb-text">+23% este mês</div>
                                 <div class="fb-sub">Faturamento</div>
@@ -1021,69 +799,53 @@
     </div>
 </section>
 
-<!-- Features Section -->
-<section id="funcionalidades" class="section-dark">
+<!-- Features -->
+<section id="funcionalidades" class="section-white">
     <div class="container">
         <div class="text-center mb-5">
-            <div class="section-label animate-on-scroll">
-                <i class="fas fa-star"></i> Funcionalidades
-            </div>
+            <div class="section-label animate-on-scroll"><i class="fas fa-star"></i> Funcionalidades</div>
             <h2 class="section-title animate-on-scroll">Tudo que você precisa para vender mais</h2>
-            <p class="section-subtitle animate-on-scroll">
-                Ferramentas poderosas para gerenciar seu negócio de ponta a ponta, sem complicação.
-            </p>
+            <p class="section-subtitle animate-on-scroll">Ferramentas poderosas para gerenciar seu negócio de ponta a ponta, sem complicação.</p>
         </div>
         <div class="row g-4">
             <div class="col-md-6 col-lg-4">
                 <div class="feature-card animate-on-scroll">
-                    <div class="feature-icon">
-                        <i class="fas fa-cash-register"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-cash-register"></i></div>
                     <h5>PDV Completo</h5>
                     <p>Tela de vendas rápida e intuitiva. Registre vendas em segundos com atalhos de teclado, busca de produtos e múltiplas formas de pagamento.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
                 <div class="feature-card animate-on-scroll">
-                    <div class="feature-icon">
-                        <i class="fas fa-boxes-stacked"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-boxes-stacked"></i></div>
                     <h5>Controle de Estoque</h5>
                     <p>Entradas, saídas e alertas automáticos. Saiba exatamente o que tem em estoque e receba avisos quando um produto está acabando.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
                 <div class="feature-card animate-on-scroll">
-                    <div class="feature-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-users"></i></div>
                     <h5>Gestão de Clientes</h5>
                     <p>Cadastro completo com histórico de compras. Conheça seus clientes, fidelize e aumente suas vendas com dados inteligentes.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
                 <div class="feature-card animate-on-scroll">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
                     <h5>Relatórios</h5>
                     <p>Vendas, lucratividade e muito mais. Dashboards visuais e relatórios detalhados para tomar decisões baseadas em dados reais.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
                 <div class="feature-card animate-on-scroll">
-                    <div class="feature-icon">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-user-shield"></i></div>
                     <h5>Multi-usuário</h5>
                     <p>Perfis de admin, gerente e caixa. Controle quem acessa o quê com permissões granulares para cada tipo de usuário.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
                 <div class="feature-card animate-on-scroll">
-                    <div class="feature-icon">
-                        <i class="fas fa-cloud"></i>
-                    </div>
+                    <div class="feature-icon"><i class="fas fa-cloud"></i></div>
                     <h5>100% Online</h5>
                     <p>Acesse de qualquer lugar, a qualquer hora. Basta um navegador e conexão com a internet. Sem instalação, sem complicação.</p>
                 </div>
@@ -1092,28 +854,20 @@
     </div>
 </section>
 
-<!-- Pricing Section -->
-<section id="precos" class="section-darker">
+<!-- Pricing -->
+<section id="precos" class="section-gray">
     <div class="container">
         <div class="text-center mb-5">
-            <div class="section-label animate-on-scroll">
-                <i class="fas fa-tags"></i> Planos e Preços
-            </div>
+            <div class="section-label animate-on-scroll"><i class="fas fa-tags"></i> Planos e Preços</div>
             <h2 class="section-title animate-on-scroll">Escolha o plano ideal para o seu negócio</h2>
-            <p class="section-subtitle animate-on-scroll">
-                Comece grátis e evolua conforme sua necessidade. Sem fidelidade, cancele quando quiser.
-            </p>
+            <p class="section-subtitle animate-on-scroll">Comece grátis e evolua conforme sua necessidade. Sem fidelidade, cancele quando quiser.</p>
         </div>
-        <div class="row g-4 justify-content-center" id="pricing-cards">
-            <!-- Free Plan -->
+        <div class="row g-4 justify-content-center">
             <div class="col-md-6 col-lg-4 animate-on-scroll">
                 <div class="pricing-card">
                     <div class="pricing-name">Free</div>
                     <div class="pricing-desc">Para quem está começando</div>
-                    <div class="pricing-price">
-                        <span class="currency">R$</span> 0
-                        <span class="period">/mês</span>
-                    </div>
+                    <div class="pricing-price"><span class="currency">R$</span> 0 <span class="period">/mês</span></div>
                     <div class="pricing-from">&nbsp;</div>
                     <ul class="pricing-features">
                         <li><i class="fas fa-check"></i> Até 50 produtos</li>
@@ -1124,19 +878,15 @@
                         <li class="disabled"><i class="fas fa-xmark"></i> Gestão de clientes</li>
                         <li class="disabled"><i class="fas fa-xmark"></i> Suporte prioritário</li>
                     </ul>
-                    <a href="/auth/register.php" class="btn-pricing btn-pricing-outline">Começar Grátis</a>
+                    <a href="/auth/register.php?plano=free" class="btn-pricing btn-pricing-outline">Começar Grátis</a>
                 </div>
             </div>
-            <!-- Basic Plan -->
             <div class="col-md-6 col-lg-4 animate-on-scroll">
                 <div class="pricing-card featured">
                     <div class="pricing-popular">Mais Popular</div>
                     <div class="pricing-name">Basic</div>
                     <div class="pricing-desc">Para pequenos negócios</div>
-                    <div class="pricing-price">
-                        <span class="currency">R$</span> 49<span style="font-size:1.5rem">,90</span>
-                        <span class="period">/mês</span>
-                    </div>
+                    <div class="pricing-price"><span class="currency">R$</span> 49<span style="font-size:1.5rem">,90</span> <span class="period">/mês</span></div>
                     <div class="pricing-from">a partir de</div>
                     <ul class="pricing-features">
                         <li><i class="fas fa-check"></i> Até 500 produtos</li>
@@ -1147,18 +897,14 @@
                         <li><i class="fas fa-check"></i> Relatórios avançados</li>
                         <li class="disabled"><i class="fas fa-xmark"></i> Suporte prioritário</li>
                     </ul>
-                    <a href="/auth/register.php" class="btn-pricing btn-pricing-primary">Começar Agora</a>
+                    <a href="/auth/register.php?plano=basic" class="btn-pricing btn-pricing-primary">Começar Agora</a>
                 </div>
             </div>
-            <!-- Pro Plan -->
             <div class="col-md-6 col-lg-4 animate-on-scroll">
                 <div class="pricing-card">
                     <div class="pricing-name">Pro</div>
                     <div class="pricing-desc">Para empresas em crescimento</div>
-                    <div class="pricing-price">
-                        <span class="currency">R$</span> 99<span style="font-size:1.5rem">,90</span>
-                        <span class="period">/mês</span>
-                    </div>
+                    <div class="pricing-price"><span class="currency">R$</span> 99<span style="font-size:1.5rem">,90</span> <span class="period">/mês</span></div>
                     <div class="pricing-from">a partir de</div>
                     <ul class="pricing-features">
                         <li><i class="fas fa-check"></i> Produtos ilimitados</li>
@@ -1169,106 +915,62 @@
                         <li><i class="fas fa-check"></i> Relatórios avançados</li>
                         <li><i class="fas fa-check"></i> Suporte prioritário 24/7</li>
                     </ul>
-                    <a href="/auth/register.php" class="btn-pricing btn-pricing-outline">Começar Agora</a>
+                    <a href="/auth/register.php?plano=pro" class="btn-pricing btn-pricing-outline">Começar Agora</a>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- FAQ Section -->
-<section id="faq" class="section-dark">
+<!-- FAQ -->
+<section id="faq" class="section-white">
     <div class="container">
         <div class="text-center mb-5">
-            <div class="section-label animate-on-scroll">
-                <i class="fas fa-circle-question"></i> Dúvidas Frequentes
-            </div>
+            <div class="section-label animate-on-scroll"><i class="fas fa-circle-question"></i> Dúvidas Frequentes</div>
             <h2 class="section-title animate-on-scroll">Perguntas Frequentes</h2>
-            <p class="section-subtitle animate-on-scroll">
-                Tire suas dúvidas sobre o PDV Pro e descubra como podemos ajudar o seu negócio.
-            </p>
+            <p class="section-subtitle animate-on-scroll">Tire suas dúvidas sobre o PDV Pro e descubra como podemos ajudar o seu negócio.</p>
         </div>
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="faq-item animate-on-scroll">
-                    <button class="faq-question" onclick="toggleFaq(this)">
-                        Preciso instalar algum programa?
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Não! O PDV Pro é 100% online. Basta acessar pelo navegador do seu computador, tablet ou celular. Não é necessário instalar nenhum programa ou aplicativo.</p>
-                    </div>
+                    <button class="faq-question" onclick="toggleFaq(this)">Preciso instalar algum programa? <i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>Não! O PDV Pro é 100% online. Basta acessar pelo navegador do seu computador, tablet ou celular. Não é necessário instalar nenhum programa ou aplicativo.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
-                    <button class="faq-question" onclick="toggleFaq(this)">
-                        Posso testar gratuitamente?
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Sim! Oferecemos um plano gratuito para você conhecer o sistema sem compromisso. Você pode usar o plano Free pelo tempo que quiser e fazer upgrade quando sentir necessidade.</p>
-                    </div>
+                    <button class="faq-question" onclick="toggleFaq(this)">Posso testar gratuitamente? <i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>Sim! Oferecemos um plano gratuito para você conhecer o sistema sem compromisso. Você pode usar o plano Free pelo tempo que quiser e fazer upgrade quando sentir necessidade.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
-                    <button class="faq-question" onclick="toggleFaq(this)">
-                        Como funciona o controle de estoque?
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="faq-answer">
-                        <p>O sistema atualiza automaticamente o estoque a cada venda realizada. Você também pode registrar entradas manuais, fazer ajustes e configurar alertas para quando um produto atingir o estoque mínimo.</p>
-                    </div>
+                    <button class="faq-question" onclick="toggleFaq(this)">Como funciona o controle de estoque? <i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>O sistema atualiza automaticamente o estoque a cada venda realizada. Você também pode registrar entradas manuais, fazer ajustes e configurar alertas para quando um produto atingir o estoque mínimo.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
-                    <button class="faq-question" onclick="toggleFaq(this)">
-                        Quantos usuários posso cadastrar?
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Depende do seu plano. O plano Free permite 1 usuário, o Basic até 3 usuários e o Pro oferece usuários ilimitados. Cada usuário pode ter um perfil diferente: administrador, gerente ou caixa.</p>
-                    </div>
+                    <button class="faq-question" onclick="toggleFaq(this)">Quantos usuários posso cadastrar? <i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>Depende do seu plano. O plano Free permite 1 usuário, o Basic até 3 usuários e o Pro oferece usuários ilimitados. Cada usuário pode ter um perfil diferente: administrador, gerente ou caixa.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
-                    <button class="faq-question" onclick="toggleFaq(this)">
-                        Meus dados estão seguros?
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Sim! Utilizamos criptografia de ponta a ponta, servidores seguros e backups automáticos diários. Seus dados ficam protegidos e acessíveis apenas por usuários autorizados da sua conta.</p>
-                    </div>
+                    <button class="faq-question" onclick="toggleFaq(this)">Meus dados estão seguros? <i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>Sim! Utilizamos criptografia de ponta a ponta, servidores seguros e backups automáticos diários. Seus dados ficam protegidos e acessíveis apenas por usuários autorizados da sua conta.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
-                    <button class="faq-question" onclick="toggleFaq(this)">
-                        Posso cancelar a qualquer momento?
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Sim! Não exigimos fidelidade nem contratos longos. Você pode cancelar ou mudar de plano a qualquer momento diretamente pelo painel, sem burocracia.</p>
-                    </div>
+                    <button class="faq-question" onclick="toggleFaq(this)">Posso cancelar a qualquer momento? <i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>Sim! Não exigimos fidelidade nem contratos longos. Você pode cancelar ou mudar de plano a qualquer momento diretamente pelo painel, sem burocracia.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
-                    <button class="faq-question" onclick="toggleFaq(this)">
-                        Emite nota fiscal?
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="faq-answer">
-                        <p>O PDV Pro é um sistema de gestão de vendas e controle interno. A emissão de notas fiscais pode ser integrada com soluções parceiras. Entre em contato para mais informações sobre integrações disponíveis.</p>
-                    </div>
+                    <button class="faq-question" onclick="toggleFaq(this)">Emite nota fiscal? <i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><p>O PDV Pro é um sistema de gestão de vendas e controle interno. A emissão de notas fiscais pode ser integrada com soluções parceiras. Entre em contato para mais informações sobre integrações disponíveis.</p></div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CTA Section -->
+<!-- CTA -->
 <section class="cta-section">
     <div class="container text-center">
         <h2 class="cta-title animate-on-scroll">Pronto para transformar suas vendas?</h2>
-        <p class="cta-text animate-on-scroll">
-            Junte-se a centenas de negócios que já usam o PDV Pro.<br>
-            Crie sua conta gratuitamente em menos de 2 minutos.
-        </p>
-        <a href="/auth/register.php" class="btn-cta animate-on-scroll">
-            <i class="fas fa-rocket"></i> Começar Grátis Agora
-        </a>
+        <p class="cta-text animate-on-scroll">Junte-se a centenas de negócios que já usam o PDV Pro.<br>Crie sua conta gratuitamente em menos de 2 minutos.</p>
+        <a href="/auth/register.php?plano=free" class="btn-cta animate-on-scroll"><i class="fas fa-rocket"></i> Começar Grátis Agora</a>
     </div>
 </section>
 
@@ -1277,12 +979,8 @@
     <div class="container">
         <div class="row g-4">
             <div class="col-lg-4">
-                <div class="footer-brand">
-                    <i class="fas fa-bolt"></i> PDV Pro
-                </div>
-                <p class="footer-desc">
-                    Sistema de vendas completo para o seu negócio. Simples, rápido e 100% online.
-                </p>
+                <div class="footer-brand"><i class="fas fa-bolt"></i> PDV Pro</div>
+                <p class="footer-desc">Sistema de vendas completo para o seu negócio. Simples, rápido e 100% online.</p>
             </div>
             <div class="col-6 col-lg-2">
                 <div class="footer-title">Produto</div>
@@ -1314,53 +1012,34 @@
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            &copy; 2026 PDV Pro. Todos os direitos reservados.
-        </div>
+        <div class="footer-bottom">&copy; 2026 PDV Pro. Todos os direitos reservados.</div>
     </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Navbar scroll effect
 window.addEventListener('scroll', function() {
     const navbar = document.querySelector('.navbar-landing');
-    if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
 });
 
-// Mobile menu toggle
 const navMenu = document.getElementById('navMenu');
 document.querySelector('.navbar-toggler-custom').addEventListener('click', function() {
     navMenu.style.display = navMenu.style.display === 'none' ? 'block' : 'none';
 });
 
-// FAQ toggle
 function toggleFaq(btn) {
     const answer = btn.nextElementSibling;
     const isOpen = answer.classList.contains('open');
-
-    // Close all
     document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
     document.querySelectorAll('.faq-question').forEach(q => q.classList.remove('active'));
-
-    // Open clicked if it was closed
-    if (!isOpen) {
-        answer.classList.add('open');
-        btn.classList.add('active');
-    }
+    if (!isOpen) { answer.classList.add('open'); btn.classList.add('active'); }
 }
 
-// Scroll animations
 const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry, index) => {
         if (entry.isIntersecting) {
-            setTimeout(() => {
-                entry.target.classList.add('visible');
-            }, index * 80);
+            setTimeout(() => { entry.target.classList.add('visible'); }, index * 80);
             observer.unobserve(entry.target);
         }
     });
