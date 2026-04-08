@@ -28,6 +28,7 @@ define('APP_URL', $_ENV['APP_URL'] ?? ($_scheme . '://' . $_host));
 
 // API do Painel (licenciamento)
 define('PAINEL_API_URL', $_ENV['PAINEL_API_URL'] ?? 'https://painel.sub2.altusci.com.br/api/index.php');
+define('PAINEL_API_SECRET', $_ENV['PAINEL_API_SECRET'] ?? 'pdvpro_api_2026_secret_key_change_this');
 
 // Sessão
 define('SESSION_LIFETIME', 28800); // 8 horas

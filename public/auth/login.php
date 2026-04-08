@@ -37,32 +37,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
                     $erro = 'Sua empresa está com o acesso suspenso. Entre em contato com o suporte.';
                     rateLimitHit('login');
                 } else {
-                    // Login bem-sucedido
-                    rateLimitClear('login');
-                    regenerateSession();
+                    // Verificar licença no Painel (se tenant tem chave)
+                    $tenant = db()->prepare("SELECT licenca_chave, data_vencimento FROM tenants WHERE id = ?");
+                    $tenant->execute([$user['tenant_id']]);
+                    $tenantData = $tenant->fetch();
 
-                    $_SESSION['usuario'] = [
-                        'id' => $user['id'],
-                        'nome' => $user['nome'],
-                        'login' => $user['login'],
-                        'perfil' => $user['perfil'],
-                        'trocar_senha' => (bool) $user['trocar_senha'],
-                    ];
-                    $_SESSION['tenant_id'] = (int) $user['tenant_id'];
+                    if (!empty($tenantData['licenca_chave'])) {
+                        // Validar com o Painel (em background, não bloquear login se API falhar)
+                        try {
+                            $validaData = json_encode([
+                                'api_secret' => PAINEL_API_SECRET,
+                                'chave'      => $tenantData['licenca_chave'],
+                            ]);
+                            $ch = curl_init(PAINEL_API_URL . '?action=validar_saas');
+                            curl_setopt_array($ch, [
+                                CURLOPT_POST           => true,
+                                CURLOPT_POSTFIELDS     => $validaData,
+                                CURLOPT_RETURNTRANSFER => true,
+                                CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+                                CURLOPT_TIMEOUT        => 5,
+                                CURLOPT_SSL_VERIFYPEER => true,
+                            ]);
+                            $validaResult = curl_exec($ch);
+                            curl_close($ch);
 
-                    // Fingerprint da sessão
-                    validateSession();
+                            if ($validaResult) {
+                                $validaResponse = json_decode($validaResult, true);
+                                if (isset($validaResponse['ok']) && !$validaResponse['ok']) {
+                                    $status = $validaResponse['status'] ?? '';
+                                    if ($status === 'expirada') {
+                                        $erro = 'Seu período de teste expirou. Entre em contato para ativar um plano.';
+                                        rateLimitHit('login');
+                                        // Atualizar status local
+                                        db()->prepare("UPDATE tenants SET status = 'suspenso' WHERE id = ?")->execute([$user['tenant_id']]);
+                                    } elseif ($status === 'bloqueada') {
+                                        $erro = 'Sua licença foi bloqueada. Entre em contato com o suporte.';
+                                        rateLimitHit('login');
+                                    } elseif ($status === 'inadimplente') {
+                                        $erro = 'Conta inadimplente. Regularize seu pagamento para continuar.';
+                                        rateLimitHit('login');
+                                    }
+                                    if (!empty($erro)) {
+                                        // Não prosseguir com login - ir direto para o else final
+                                    }
+                                } elseif (isset($validaResponse['ok']) && $validaResponse['ok']) {
+                                    // Atualizar data de vencimento local
+                                    if (!empty($validaResponse['data_vencimento'])) {
+                                        db()->prepare("UPDATE tenants SET data_vencimento = ? WHERE id = ?")
+                                            ->execute([$validaResponse['data_vencimento'], $user['tenant_id']]);
+                                    }
+                                }
+                            }
+                        } catch (\Throwable $e) {
+                            // Se API falhar, verificar vencimento local
+                            if (!empty($tenantData['data_vencimento']) && strtotime($tenantData['data_vencimento']) < time()) {
+                                $erro = 'Seu período de teste expirou. Entre em contato para ativar um plano.';
+                                rateLimitHit('login');
+                            }
+                        }
+                    } elseif (!empty($tenantData['data_vencimento']) && strtotime($tenantData['data_vencimento']) < time()) {
+                        // Sem chave mas com vencimento local
+                        $erro = 'Seu período de teste expirou. Entre em contato para ativar um plano.';
+                        rateLimitHit('login');
+                    }
 
-                    // Atualizar último acesso
-                    db()->prepare("UPDATE usuarios SET ultimo_acesso = ? WHERE id = ?")
-                        ->execute([date('Y-m-d H:i:s'), $user['id']]);
+                    if (empty($erro)) {
+                        // Login bem-sucedido
+                        rateLimitClear('login');
+                        regenerateSession();
 
-                    auditLog('login', 'Login bem-sucedido');
+                        $_SESSION['usuario'] = [
+                            'id' => $user['id'],
+                            'nome' => $user['nome'],
+                            'login' => $user['login'],
+                            'perfil' => $user['perfil'],
+                            'trocar_senha' => (bool) $user['trocar_senha'],
+                        ];
+                        $_SESSION['tenant_id'] = (int) $user['tenant_id'];
 
-                    if ($user['trocar_senha']) {
-                        redirect('auth/trocar_senha.php');
-                    } else {
-                        redirect('dashboard/');
+                        // Fingerprint da sessão
+                        validateSession();
+
+                        // Atualizar último acesso
+                        db()->prepare("UPDATE usuarios SET ultimo_acesso = ? WHERE id = ?")
+                            ->execute([date('Y-m-d H:i:s'), $user['id']]);
+
+                        auditLog('login', 'Login bem-sucedido');
+
+                        if ($user['trocar_senha']) {
+                            redirect('auth/trocar_senha.php');
+                        } else {
+                            redirect('dashboard/');
+                        }
                     }
                 }
             } else {

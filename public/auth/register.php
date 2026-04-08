@@ -24,13 +24,13 @@ $dados = [
 ];
 
 // Plano selecionado
-$planoSelecionado = sanitize($_GET['plano'] ?? $_POST['plano'] ?? 'free');
+$planoSelecionado = sanitize($_GET['plano'] ?? $_POST['plano'] ?? 'starter');
 $planosInfo = [
-    'free'  => ['nome' => 'Free',  'preco' => 'Grátis',       'valor' => 0,     'cor' => '#10b981'],
-    'basic' => ['nome' => 'Basic', 'preco' => 'R$ 49,90/mês', 'valor' => 49.90, 'cor' => '#4f46e5'],
-    'pro'   => ['nome' => 'Pro',   'preco' => 'R$ 99,90/mês', 'valor' => 99.90, 'cor' => '#f59e0b'],
+    'starter'    => ['nome' => 'Starter',    'preco' => 'R$ 99,90/mês',  'valor' => 99.90,  'cor' => '#10b981', 'slug' => 'saas-starter-mensal'],
+    'business'   => ['nome' => 'Business',   'preco' => 'R$ 199,90/mês', 'valor' => 199.90, 'cor' => '#4f46e5', 'slug' => 'saas-business-mensal'],
+    'enterprise' => ['nome' => 'Enterprise', 'preco' => 'R$ 399,90/mês', 'valor' => 399.90, 'cor' => '#f59e0b', 'slug' => 'saas-enterprise-mensal'],
 ];
-if (!isset($planosInfo[$planoSelecionado])) $planoSelecionado = 'free';
+if (!isset($planosInfo[$planoSelecionado])) $planoSelecionado = 'starter';
 $planoAtual = $planosInfo[$planoSelecionado];
 
 // Rate limit: 3 tentativas por 10 minutos
@@ -116,8 +116,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
                 $pdo = db();
                 $pdo->beginTransaction();
 
-                // 1. Criar tenant
-                $stmt = $pdo->prepare("INSERT INTO tenants (razao_social, nome_fantasia, cnpj, email, telefone, cidade, estado, plano, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ativo')");
+                // 1. Registrar no Painel (licenciamento centralizado)
+                $painelResponse = null;
+                $licencaChave = null;
+                $painelApiToken = null;
+                try {
+                    $painelData = json_encode([
+                        'api_secret'     => PAINEL_API_SECRET,
+                        'razao_social'   => $dados['nome_empresa'],
+                        'nome_fantasia'  => $dados['nome_fantasia'],
+                        'cnpj'           => $dados['cnpj'],
+                        'email'          => $dados['email'],
+                        'whatsapp'       => $dados['whatsapp'],
+                        'contato_nome'   => $dados['nome_responsavel'],
+                        'cidade'         => $dados['cidade'],
+                        'uf'             => $dados['uf'],
+                        'plano_slug'     => $planoAtual['slug'],
+                    ]);
+
+                    $ch = curl_init(PAINEL_API_URL . '?action=registrar_saas');
+                    curl_setopt_array($ch, [
+                        CURLOPT_POST           => true,
+                        CURLOPT_POSTFIELDS     => $painelData,
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+                        CURLOPT_TIMEOUT        => 15,
+                        CURLOPT_SSL_VERIFYPEER => true,
+                    ]);
+                    $painelResult = curl_exec($ch);
+                    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
+
+                    if ($painelResult) {
+                        $painelResponse = json_decode($painelResult, true);
+                    }
+
+                    if ($httpCode === 409) {
+                        $erros[] = $painelResponse['mensagem'] ?? 'CNPJ já cadastrado no sistema de licenciamento.';
+                        throw new \Exception('CNPJ duplicado no Painel');
+                    }
+
+                    if ($painelResponse && !empty($painelResponse['ok'])) {
+                        $licencaChave = $painelResponse['chave'] ?? null;
+                        $painelApiToken = $painelResponse['api_token'] ?? null;
+                    }
+                } catch (\Exception $apiEx) {
+                    if (!empty($erros)) {
+                        throw $apiEx; // Propagar erro de CNPJ duplicado
+                    }
+                    // Se API do Painel falhar, continuar sem licença (registrar localmente)
+                    error_log('Painel API error: ' . $apiEx->getMessage());
+                }
+
+                // 2. Criar tenant
+                $stmt = $pdo->prepare("INSERT INTO tenants (razao_social, nome_fantasia, cnpj, email, telefone, cidade, estado, plano, licenca_chave, api_token, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo')");
                 $stmt->execute([
                     $dados['nome_empresa'],
                     $dados['nome_fantasia'],
@@ -127,10 +179,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
                     $dados['cidade'],
                     $dados['uf'],
                     $planoSelecionado,
+                    $licencaChave,
+                    $painelApiToken,
                 ]);
                 $tenantId = (int) $pdo->lastInsertId();
 
-                // 2. Criar usuário admin
+                // 3. Criar usuário admin
                 $senhaHash = hashPassword($senha);
                 $stmt = $pdo->prepare("INSERT INTO usuarios (tenant_id, nome, login, email, senha_hash, perfil, ativo, trocar_senha) VALUES (?, ?, ?, ?, ?, 'admin', 1, 0)");
                 $stmt->execute([
@@ -142,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
                 ]);
                 $usuarioId = (int) $pdo->lastInsertId();
 
-                // 3. Criar configurações padrão
+                // 4. Criar configurações padrão
                 $configsPadrao = [
                     ['nome_loja', $dados['nome_fantasia'], 'sistema'],
                     ['cnpj', $dados['cnpj'], 'empresa'],
@@ -156,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
 
                 $pdo->commit();
 
-                // 4. Auto-login
+                // 5. Auto-login
                 regenerateSession();
 
                 $_SESSION['usuario'] = [
@@ -170,18 +224,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
 
                 validateSession();
 
-                auditLog('registro', 'Nova empresa cadastrada: ' . $dados['cnpj'], $tenantId, $usuarioId);
+                auditLog('registro', 'Nova empresa cadastrada: ' . $dados['cnpj'] . ($licencaChave ? ' | Licença: ' . $licencaChave : ''), $tenantId, $usuarioId);
 
                 rateLimitClear('register');
-                flashSuccess('Cadastro realizado com sucesso! Bem-vindo ao ' . APP_NAME . '.');
+
+                // Se plano pago e tem URL de pagamento, redirecionar
+                if ($painelResponse && !empty($painelResponse['payment_url'])) {
+                    flashSuccess('Cadastro realizado! Você será redirecionado para o pagamento.');
+                    redirect($painelResponse['payment_url']);
+                }
+
+                flashSuccess('Cadastro realizado com sucesso! Bem-vindo ao ' . APP_NAME . '. Seu período de teste é de 15 dias.');
                 redirect('dashboard/');
 
             } catch (\Exception $ex) {
-                if ($pdo->inTransaction()) {
+                if (isset($pdo) && $pdo->inTransaction()) {
                     $pdo->rollBack();
                 }
                 rateLimitHit('register', 600);
-                $erro = 'Erro ao criar conta. Tente novamente.';
+                if (empty($erros)) {
+                    $erro = 'Erro ao criar conta. Tente novamente.';
+                }
                 error_log('Register error: ' . $ex->getMessage());
             }
         } else {
@@ -367,14 +430,15 @@ $ufs = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','P
                 <h6 class="mb-0"><i class="fas fa-tag me-2"></i>Plano <?= e($planoAtual['nome']) ?></h6>
                 <span class="fw-bold" style="color: <?= $planoAtual['cor'] ?>; font-size: 1.2rem;"><?= e($planoAtual['preco']) ?></span>
             </div>
-            <?php if ($planoSelecionado === 'free'): ?>
-                <div class="benefit-item"><i class="fas fa-check"></i> Até 50 produtos</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> 1 usuário</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> PDV básico</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> Relatórios simples</div>
-            <?php elseif ($planoSelecionado === 'basic'): ?>
+            <?php if ($planoSelecionado === 'starter'): ?>
                 <div class="benefit-item"><i class="fas fa-check"></i> Até 500 produtos</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> 3 usuários</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> 2 usuários</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> PDV completo</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> Controle de estoque</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> Relatórios básicos</div>
+            <?php elseif ($planoSelecionado === 'business'): ?>
+                <div class="benefit-item"><i class="fas fa-check"></i> Até 2.000 produtos</div>
+                <div class="benefit-item"><i class="fas fa-check"></i> 5 usuários</div>
                 <div class="benefit-item"><i class="fas fa-check"></i> PDV completo + estoque</div>
                 <div class="benefit-item"><i class="fas fa-check"></i> Gestão de clientes</div>
                 <div class="benefit-item"><i class="fas fa-check"></i> Relatórios avançados</div>
@@ -386,9 +450,7 @@ $ufs = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','P
                 <div class="benefit-item"><i class="fas fa-check"></i> Relatórios avançados</div>
                 <div class="benefit-item"><i class="fas fa-check"></i> Suporte prioritário 24/7</div>
             <?php endif; ?>
-            <?php if ($planoSelecionado !== 'free'): ?>
-                <div class="mt-2"><small class="text-muted">O pagamento será configurado após o cadastro.</small></div>
-            <?php endif; ?>
+            <div class="mt-2"><small class="text-muted"><i class="fas fa-gift me-1"></i>15 dias de teste grátis. O pagamento será configurado após o período de teste.</small></div>
             <div class="mt-2">
                 <a href="/" class="text-decoration-none" style="font-size: 0.8rem; color: <?= $planoAtual['cor'] ?>;">
                     <i class="fas fa-arrow-left me-1"></i>Trocar plano
@@ -535,7 +597,7 @@ $ufs = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','P
             </div>
 
             <button type="submit" class="btn btn-primary btn-register w-100 mb-3" <?= $bloqueado ? 'disabled' : '' ?>>
-                <i class="fas fa-rocket me-2"></i>Criar Conta Gratuita
+                <i class="fas fa-rocket me-2"></i>Começar Teste Grátis
             </button>
         </form>
 

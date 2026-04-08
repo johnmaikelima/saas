@@ -726,8 +726,8 @@
                     Simples, rápido e acessível de qualquer dispositivo.
                 </p>
                 <div class="hero-actions">
-                    <a href="/auth/register.php?plano=free" class="btn-hero-primary">
-                        <i class="fas fa-rocket"></i> Começar Grátis
+                    <a href="/auth/register.php?plano=starter" class="btn-hero-primary">
+                        <i class="fas fa-rocket"></i> Teste 15 Dias Grátis
                     </a>
                     <a href="/auth/login.php" class="btn-hero-secondary">
                         <i class="fas fa-sign-in-alt"></i> Já tem conta? Entrar
@@ -860,51 +860,51 @@
         <div class="text-center mb-5">
             <div class="section-label animate-on-scroll"><i class="fas fa-tags"></i> Planos e Preços</div>
             <h2 class="section-title animate-on-scroll">Escolha o plano ideal para o seu negócio</h2>
-            <p class="section-subtitle animate-on-scroll">Comece grátis e evolua conforme sua necessidade. Sem fidelidade, cancele quando quiser.</p>
+            <p class="section-subtitle animate-on-scroll">Teste grátis por 15 dias e evolua conforme sua necessidade. Sem fidelidade, cancele quando quiser.</p>
         </div>
         <div class="row g-4 justify-content-center">
             <div class="col-md-6 col-lg-4 animate-on-scroll">
                 <div class="pricing-card">
-                    <div class="pricing-name">Free</div>
+                    <div class="pricing-name">Starter</div>
                     <div class="pricing-desc">Para quem está começando</div>
-                    <div class="pricing-price"><span class="currency">R$</span> 0 <span class="period">/mês</span></div>
+                    <div class="pricing-price"><span class="currency">R$</span> 99<span style="font-size:1.5rem">,90</span> <span class="period">/mês</span></div>
                     <div class="pricing-from">&nbsp;</div>
                     <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> Até 50 produtos</li>
-                        <li><i class="fas fa-check"></i> 1 usuário</li>
-                        <li><i class="fas fa-check"></i> PDV básico</li>
-                        <li><i class="fas fa-check"></i> Relatórios simples</li>
-                        <li class="disabled"><i class="fas fa-xmark"></i> Controle de estoque</li>
+                        <li><i class="fas fa-check"></i> Até 500 produtos</li>
+                        <li><i class="fas fa-check"></i> 2 usuários</li>
+                        <li><i class="fas fa-check"></i> PDV completo</li>
+                        <li><i class="fas fa-check"></i> Controle de estoque</li>
+                        <li><i class="fas fa-check"></i> Relatórios básicos</li>
                         <li class="disabled"><i class="fas fa-xmark"></i> Gestão de clientes</li>
                         <li class="disabled"><i class="fas fa-xmark"></i> Suporte prioritário</li>
                     </ul>
-                    <a href="/auth/register.php?plano=free" class="btn-pricing btn-pricing-outline">Começar Grátis</a>
+                    <a href="/auth/register.php?plano=starter" class="btn-pricing btn-pricing-outline">Começar Agora</a>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4 animate-on-scroll">
                 <div class="pricing-card featured">
                     <div class="pricing-popular">Mais Popular</div>
-                    <div class="pricing-name">Basic</div>
+                    <div class="pricing-name">Business</div>
                     <div class="pricing-desc">Para pequenos negócios</div>
-                    <div class="pricing-price"><span class="currency">R$</span> 49<span style="font-size:1.5rem">,90</span> <span class="period">/mês</span></div>
+                    <div class="pricing-price"><span class="currency">R$</span> 199<span style="font-size:1.5rem">,90</span> <span class="period">/mês</span></div>
                     <div class="pricing-from">a partir de</div>
                     <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> Até 500 produtos</li>
-                        <li><i class="fas fa-check"></i> 3 usuários</li>
+                        <li><i class="fas fa-check"></i> Até 2.000 produtos</li>
+                        <li><i class="fas fa-check"></i> 5 usuários</li>
                         <li><i class="fas fa-check"></i> PDV completo</li>
                         <li><i class="fas fa-check"></i> Controle de estoque</li>
                         <li><i class="fas fa-check"></i> Gestão de clientes</li>
                         <li><i class="fas fa-check"></i> Relatórios avançados</li>
                         <li class="disabled"><i class="fas fa-xmark"></i> Suporte prioritário</li>
                     </ul>
-                    <a href="/auth/register.php?plano=basic" class="btn-pricing btn-pricing-primary">Começar Agora</a>
+                    <a href="/auth/register.php?plano=business" class="btn-pricing btn-pricing-primary">Começar Agora</a>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4 animate-on-scroll">
                 <div class="pricing-card">
-                    <div class="pricing-name">Pro</div>
+                    <div class="pricing-name">Enterprise</div>
                     <div class="pricing-desc">Para empresas em crescimento</div>
-                    <div class="pricing-price"><span class="currency">R$</span> 99<span style="font-size:1.5rem">,90</span> <span class="period">/mês</span></div>
+                    <div class="pricing-price"><span class="currency">R$</span> 399<span style="font-size:1.5rem">,90</span> <span class="period">/mês</span></div>
                     <div class="pricing-from">a partir de</div>
                     <ul class="pricing-features">
                         <li><i class="fas fa-check"></i> Produtos ilimitados</li>
@@ -915,7 +915,7 @@
                         <li><i class="fas fa-check"></i> Relatórios avançados</li>
                         <li><i class="fas fa-check"></i> Suporte prioritário 24/7</li>
                     </ul>
-                    <a href="/auth/register.php?plano=pro" class="btn-pricing btn-pricing-outline">Começar Agora</a>
+                    <a href="/auth/register.php?plano=enterprise" class="btn-pricing btn-pricing-outline">Começar Agora</a>
                 </div>
             </div>
         </div>
@@ -938,7 +938,7 @@
                 </div>
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">Posso testar gratuitamente? <i class="fas fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>Sim! Oferecemos um plano gratuito para você conhecer o sistema sem compromisso. Você pode usar o plano Free pelo tempo que quiser e fazer upgrade quando sentir necessidade.</p></div>
+                    <div class="faq-answer"><p>Sim! Oferecemos 15 dias de teste grátis para você conhecer o sistema sem compromisso. Após o período de teste, escolha o plano que melhor atende seu negócio.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">Como funciona o controle de estoque? <i class="fas fa-chevron-down"></i></button>
@@ -969,8 +969,8 @@
 <section class="cta-section">
     <div class="container text-center">
         <h2 class="cta-title animate-on-scroll">Pronto para transformar suas vendas?</h2>
-        <p class="cta-text animate-on-scroll">Junte-se a centenas de negócios que já usam o PDV Pro.<br>Crie sua conta gratuitamente em menos de 2 minutos.</p>
-        <a href="/auth/register.php?plano=free" class="btn-cta animate-on-scroll"><i class="fas fa-rocket"></i> Começar Grátis Agora</a>
+        <p class="cta-text animate-on-scroll">Junte-se a centenas de negócios que já usam o PDV Pro.<br>Teste grátis por 15 dias. Crie sua conta em menos de 2 minutos.</p>
+        <a href="/auth/register.php?plano=starter" class="btn-cta animate-on-scroll"><i class="fas fa-rocket"></i> Teste 15 Dias Grátis</a>
     </div>
 </section>
 
