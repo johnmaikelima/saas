@@ -1,0 +1,178 @@
+<?php
+$pageTitle = 'Login';
+require_once __DIR__ . '/../../app/bootstrap.php';
+autoMigrate();
+
+// Já logado?
+if (isset($_SESSION['usuario']) && isset($_SESSION['tenant_id'])) {
+    redirect('dashboard/');
+}
+
+$erro = '';
+$bloqueado = false;
+
+// Verificar rate limit
+if (rateLimited('login')) {
+    $bloqueado = true;
+    $erro = 'Muitas tentativas de login. Aguarde alguns minutos antes de tentar novamente.';
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
+    if (!verifyCsrf()) {
+        $erro = 'Token de segurança inválido. Recarregue a página.';
+    } else {
+        $login = sanitize($_POST['login'] ?? '');
+        $senha = $_POST['senha'] ?? '';
+
+        if (empty($login) || empty($senha)) {
+            $erro = 'Preencha login e senha.';
+        } else {
+            $stmt = db()->prepare("SELECT u.*, t.status as tenant_status FROM usuarios u JOIN tenants t ON t.id = u.tenant_id WHERE u.login = ? AND u.ativo = 1");
+            $stmt->execute([$login]);
+            $user = $stmt->fetch();
+
+            if ($user && verifyPassword($senha, $user['senha_hash'])) {
+                // Verificar se o tenant está ativo
+                if ($user['tenant_status'] !== 'ativo') {
+                    $erro = 'Sua empresa está com o acesso suspenso. Entre em contato com o suporte.';
+                    rateLimitHit('login');
+                } else {
+                    // Login bem-sucedido
+                    rateLimitClear('login');
+                    regenerateSession();
+
+                    $_SESSION['usuario'] = [
+                        'id' => $user['id'],
+                        'nome' => $user['nome'],
+                        'login' => $user['login'],
+                        'perfil' => $user['perfil'],
+                        'trocar_senha' => (bool) $user['trocar_senha'],
+                    ];
+                    $_SESSION['tenant_id'] = (int) $user['tenant_id'];
+
+                    // Fingerprint da sessão
+                    validateSession();
+
+                    // Atualizar último acesso
+                    db()->prepare("UPDATE usuarios SET ultimo_acesso = ? WHERE id = ?")
+                        ->execute([date('Y-m-d H:i:s'), $user['id']]);
+
+                    auditLog('login', 'Login bem-sucedido');
+
+                    if ($user['trocar_senha']) {
+                        redirect('auth/trocar_senha.php');
+                    } else {
+                        redirect('dashboard/');
+                    }
+                }
+            } else {
+                rateLimitHit('login');
+                $erro = 'Login ou senha incorretos.';
+            }
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - <?= e(APP_NAME) ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 420px;
+            width: 100%;
+            padding: 40px;
+        }
+        .login-card .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-card .logo i {
+            font-size: 48px;
+            color: #0f3460;
+        }
+        .login-card .logo h4 {
+            color: #1a1a2e;
+            margin-top: 10px;
+            font-weight: 700;
+        }
+        .form-floating > .form-control:focus {
+            border-color: #0f3460;
+            box-shadow: 0 0 0 0.2rem rgba(15,52,96,0.25);
+        }
+        .btn-login {
+            background: #0f3460;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .btn-login:hover {
+            background: #1a1a2e;
+        }
+        .alert-rate-limit {
+            background: #fff3cd;
+            border-color: #ffecb5;
+            color: #664d03;
+        }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <div class="logo">
+        <i class="fas fa-cash-register"></i>
+        <h4><?= e(APP_NAME) ?></h4>
+        <small class="text-muted">Sistema PDV - Acesso Seguro</small>
+    </div>
+
+    <?php if ($erro): ?>
+        <div class="alert <?= $bloqueado ? 'alert-warning alert-rate-limit' : 'alert-danger' ?> py-2">
+            <i class="fas <?= $bloqueado ? 'fa-clock' : 'fa-exclamation-circle' ?> me-1"></i><?= e($erro) ?>
+        </div>
+    <?php endif; ?>
+
+    <?= renderFlash() ?>
+
+    <form method="POST" autocomplete="off">
+        <?= csrfField() ?>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="login" name="login" placeholder="Login"
+                   value="<?= e($_POST['login'] ?? '') ?>" autofocus required <?= $bloqueado ? 'disabled' : '' ?>>
+            <label for="login"><i class="fas fa-user me-1"></i>Login</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="senha" name="senha" placeholder="Senha"
+                   required <?= $bloqueado ? 'disabled' : '' ?>>
+            <label for="senha"><i class="fas fa-lock me-1"></i>Senha</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-login w-100 mb-3" <?= $bloqueado ? 'disabled' : '' ?>>
+            <i class="fas fa-sign-in-alt me-2"></i>Entrar
+        </button>
+    </form>
+
+    <div class="text-center">
+        <a href="register.php" class="text-decoration-none" style="color: #0f3460;">
+            <i class="fas fa-building me-1"></i>Cadastrar nova empresa
+        </a>
+    </div>
+
+    <div class="text-center mt-3">
+        <small class="text-muted"><?= e(APP_NAME) ?> v<?= APP_VERSION ?></small>
+    </div>
+</div>
+</body>
+</html>
