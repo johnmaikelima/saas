@@ -27,11 +27,11 @@ $_host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 define('APP_URL', $_ENV['APP_URL'] ?? ($_scheme . '://' . $_host));
 
 // API do Painel (licenciamento)
-define('PAINEL_API_URL', $_ENV['PAINEL_API_URL'] ?? 'https://painel.sub2.altusci.com.br/api/index.php');
-define('PAINEL_API_SECRET', $_ENV['PAINEL_API_SECRET'] ?? 'pdvpro_api_2026_secret_key_change_this');
+define('PAINEL_API_URL', $_ENV['PAINEL_API_URL'] ?? '');
+define('PAINEL_API_SECRET', $_ENV['PAINEL_API_SECRET'] ?? '');
 
 // Sessão
 define('SESSION_LIFETIME', 28800); // 8 horas
 
 // Setup key
-define('SETUP_KEY', $_ENV['SETUP_KEY'] ?? 'pdvpro-saas-2026');
+define('SETUP_KEY', $_ENV['SETUP_KEY'] ?? '');
