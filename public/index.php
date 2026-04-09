@@ -1,5 +1,49 @@
 <?php
 // Landing page pública - sem autenticação
+require_once __DIR__ . '/../app/config.php';
+
+// Buscar planos do Painel (com cache de 10 minutos)
+$planos = [];
+$cacheFile = STORAGE_PATH . '/cache_planos.json';
+$cacheValido = file_exists($cacheFile) && (time() - filemtime($cacheFile)) < 600;
+
+if ($cacheValido) {
+    $planos = json_decode(file_get_contents($cacheFile), true) ?: [];
+} elseif (!empty(PAINEL_API_URL)) {
+    try {
+        $ch = curl_init(PAINEL_API_URL . '?action=planos&tipo=saas');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 5,
+            CURLOPT_SSL_VERIFYPEER => true,
+        ]);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        if ($result) {
+            $data = json_decode($result, true);
+            if (!empty($data['ok']) && !empty($data['planos'])) {
+                $planos = $data['planos'];
+                @file_put_contents($cacheFile, json_encode($planos));
+            }
+        }
+    } catch (\Throwable $e) {
+        // Silenciar - usa fallback
+    }
+}
+
+// Fallback se API falhar
+if (empty($planos)) {
+    $planos = [
+        ['nome' => 'Starter',    'slug' => 'saas-starter-mensal',    'preco' => 99.90,  'recursos' => ['descricao' => 'Para quem está começando', 'beneficios' => ['Até 500 produtos','2 usuários','PDV completo','Controle de estoque','Relatórios básicos']]],
+        ['nome' => 'Business',   'slug' => 'saas-business-mensal',   'preco' => 199.90, 'recursos' => ['descricao' => 'Para pequenos negócios', 'destaque' => true, 'beneficios' => ['Até 2.000 produtos','5 usuários','PDV completo','Controle de estoque','Gestão de clientes','Relatórios avançados']]],
+        ['nome' => 'Enterprise', 'slug' => 'saas-enterprise-mensal', 'preco' => 399.90, 'recursos' => ['descricao' => 'Para empresas em crescimento', 'beneficios' => ['Produtos ilimitados','Usuários ilimitados','PDV completo','Controle de estoque','Gestão de clientes','Relatórios avançados','Suporte prioritário 24/7']]],
+    ];
+}
+
+// Extrair slug curto para o link de registro (ex: saas-starter-mensal → starter)
+function slugCurto(string $slug): string {
+    return str_replace(['saas-', '-mensal', '-trimestral', '-anual'], '', $slug);
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -863,61 +907,38 @@
             <p class="section-subtitle animate-on-scroll">Teste grátis por 15 dias e evolua conforme sua necessidade. Sem fidelidade, cancele quando quiser.</p>
         </div>
         <div class="row g-4 justify-content-center">
+            <?php foreach ($planos as $i => $plano):
+                $recursos = is_array($plano['recursos']) ? $plano['recursos'] : (json_decode($plano['recursos'] ?? '{}', true) ?: []);
+                $destaque = !empty($recursos['destaque']);
+                $descricao = $recursos['descricao'] ?? '';
+                $beneficios = $recursos['beneficios'] ?? [];
+                $preco = (float)$plano['preco'];
+                $precoInteiro = floor($preco);
+                $precoCentavos = round(($preco - $precoInteiro) * 100);
+                $slugParam = slugCurto($plano['slug']);
+            ?>
             <div class="col-md-6 col-lg-4 animate-on-scroll">
-                <div class="pricing-card">
-                    <div class="pricing-name">Starter</div>
-                    <div class="pricing-desc">Para quem está começando</div>
-                    <div class="pricing-price"><span class="currency">R$</span> 99<span style="font-size:1.5rem">,90</span> <span class="period">/mês</span></div>
+                <div class="pricing-card<?= $destaque ? ' featured' : '' ?>">
+                    <?php if ($destaque): ?><div class="pricing-popular">Mais Popular</div><?php endif; ?>
+                    <div class="pricing-name"><?= htmlspecialchars($plano['nome']) ?></div>
+                    <?php if ($descricao): ?><div class="pricing-desc"><?= htmlspecialchars($descricao) ?></div><?php endif; ?>
+                    <?php if ($preco > 0): ?>
+                        <div class="pricing-price"><span class="currency">R$</span> <?= $precoInteiro ?><?php if ($precoCentavos > 0): ?><span style="font-size:1.5rem">,<?= str_pad($precoCentavos, 2, '0') ?></span><?php endif; ?> <span class="period">/mês</span></div>
+                    <?php else: ?>
+                        <div class="pricing-price"><span class="currency">R$</span> 0 <span class="period">/mês</span></div>
+                    <?php endif; ?>
                     <div class="pricing-from">&nbsp;</div>
+                    <?php if (!empty($beneficios)): ?>
                     <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> Até 500 produtos</li>
-                        <li><i class="fas fa-check"></i> 2 usuários</li>
-                        <li><i class="fas fa-check"></i> PDV completo</li>
-                        <li><i class="fas fa-check"></i> Controle de estoque</li>
-                        <li><i class="fas fa-check"></i> Relatórios básicos</li>
-                        <li class="disabled"><i class="fas fa-xmark"></i> Gestão de clientes</li>
-                        <li class="disabled"><i class="fas fa-xmark"></i> Suporte prioritário</li>
+                        <?php foreach ($beneficios as $b): ?>
+                            <li><i class="fas fa-check"></i> <?= htmlspecialchars($b) ?></li>
+                        <?php endforeach; ?>
                     </ul>
-                    <a href="/auth/register.php?plano=starter" class="btn-pricing btn-pricing-outline">Começar Agora</a>
+                    <?php endif; ?>
+                    <a href="/auth/register.php?plano=<?= htmlspecialchars($slugParam) ?>" class="btn-pricing <?= $destaque ? 'btn-pricing-primary' : 'btn-pricing-outline' ?>">Começar Agora</a>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4 animate-on-scroll">
-                <div class="pricing-card featured">
-                    <div class="pricing-popular">Mais Popular</div>
-                    <div class="pricing-name">Business</div>
-                    <div class="pricing-desc">Para pequenos negócios</div>
-                    <div class="pricing-price"><span class="currency">R$</span> 199<span style="font-size:1.5rem">,90</span> <span class="period">/mês</span></div>
-                    <div class="pricing-from">a partir de</div>
-                    <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> Até 2.000 produtos</li>
-                        <li><i class="fas fa-check"></i> 5 usuários</li>
-                        <li><i class="fas fa-check"></i> PDV completo</li>
-                        <li><i class="fas fa-check"></i> Controle de estoque</li>
-                        <li><i class="fas fa-check"></i> Gestão de clientes</li>
-                        <li><i class="fas fa-check"></i> Relatórios avançados</li>
-                        <li class="disabled"><i class="fas fa-xmark"></i> Suporte prioritário</li>
-                    </ul>
-                    <a href="/auth/register.php?plano=business" class="btn-pricing btn-pricing-primary">Começar Agora</a>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4 animate-on-scroll">
-                <div class="pricing-card">
-                    <div class="pricing-name">Enterprise</div>
-                    <div class="pricing-desc">Para empresas em crescimento</div>
-                    <div class="pricing-price"><span class="currency">R$</span> 399<span style="font-size:1.5rem">,90</span> <span class="period">/mês</span></div>
-                    <div class="pricing-from">a partir de</div>
-                    <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> Produtos ilimitados</li>
-                        <li><i class="fas fa-check"></i> Usuários ilimitados</li>
-                        <li><i class="fas fa-check"></i> PDV completo</li>
-                        <li><i class="fas fa-check"></i> Controle de estoque</li>
-                        <li><i class="fas fa-check"></i> Gestão de clientes</li>
-                        <li><i class="fas fa-check"></i> Relatórios avançados</li>
-                        <li><i class="fas fa-check"></i> Suporte prioritário 24/7</li>
-                    </ul>
-                    <a href="/auth/register.php?plano=enterprise" class="btn-pricing btn-pricing-outline">Começar Agora</a>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>

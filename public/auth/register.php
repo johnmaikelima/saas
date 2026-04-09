@@ -23,14 +23,58 @@ $dados = [
     'login' => '',
 ];
 
+// Buscar planos do Painel (com cache)
+$planosApi = [];
+$cacheFile = STORAGE_PATH . '/cache_planos.json';
+$cacheValido = file_exists($cacheFile) && (time() - filemtime($cacheFile)) < 600;
+
+if ($cacheValido) {
+    $planosApi = json_decode(file_get_contents($cacheFile), true) ?: [];
+} elseif (!empty(PAINEL_API_URL)) {
+    try {
+        $ch = curl_init(PAINEL_API_URL . '?action=planos&tipo=saas');
+        curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 5, CURLOPT_SSL_VERIFYPEER => true]);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        if ($result) {
+            $data = json_decode($result, true);
+            if (!empty($data['ok']) && !empty($data['planos'])) {
+                $planosApi = $data['planos'];
+                @file_put_contents($cacheFile, json_encode($planosApi));
+            }
+        }
+    } catch (\Throwable $e) {}
+}
+
+// Montar array de planos indexado pelo slug curto
+$cores = ['#10b981', '#4f46e5', '#f59e0b', '#ef4444', '#8b5cf6'];
+$planosInfo = [];
+foreach ($planosApi as $i => $p) {
+    $slugCurto = str_replace(['saas-', '-mensal', '-trimestral', '-anual'], '', $p['slug']);
+    $preco = (float)$p['preco'];
+    $recursos = is_array($p['recursos']) ? $p['recursos'] : (json_decode($p['recursos'] ?? '{}', true) ?: []);
+    $planosInfo[$slugCurto] = [
+        'nome'       => $p['nome'],
+        'preco'      => $preco > 0 ? 'R$ ' . number_format($preco, 2, ',', '.') . '/mês' : 'Grátis',
+        'valor'      => $preco,
+        'cor'        => $cores[$i % count($cores)],
+        'slug'       => $p['slug'],
+        'beneficios' => $recursos['beneficios'] ?? [],
+    ];
+}
+
+// Fallback se API falhar
+if (empty($planosInfo)) {
+    $planosInfo = [
+        'starter'    => ['nome' => 'Starter',    'preco' => 'R$ 99,90/mês',  'valor' => 99.90,  'cor' => '#10b981', 'slug' => 'saas-starter-mensal', 'beneficios' => ['Até 500 produtos','2 usuários','PDV completo','Controle de estoque','Relatórios básicos']],
+        'business'   => ['nome' => 'Business',   'preco' => 'R$ 199,90/mês', 'valor' => 199.90, 'cor' => '#4f46e5', 'slug' => 'saas-business-mensal', 'beneficios' => ['Até 2.000 produtos','5 usuários','PDV completo','Controle de estoque','Gestão de clientes','Relatórios avançados']],
+        'enterprise' => ['nome' => 'Enterprise', 'preco' => 'R$ 399,90/mês', 'valor' => 399.90, 'cor' => '#f59e0b', 'slug' => 'saas-enterprise-mensal', 'beneficios' => ['Produtos ilimitados','Usuários ilimitados','PDV completo','Controle de estoque','Gestão de clientes','Relatórios avançados','Suporte prioritário 24/7']],
+    ];
+}
+
 // Plano selecionado
-$planoSelecionado = sanitize($_GET['plano'] ?? $_POST['plano'] ?? 'starter');
-$planosInfo = [
-    'starter'    => ['nome' => 'Starter',    'preco' => 'R$ 99,90/mês',  'valor' => 99.90,  'cor' => '#10b981', 'slug' => 'saas-starter-mensal'],
-    'business'   => ['nome' => 'Business',   'preco' => 'R$ 199,90/mês', 'valor' => 199.90, 'cor' => '#4f46e5', 'slug' => 'saas-business-mensal'],
-    'enterprise' => ['nome' => 'Enterprise', 'preco' => 'R$ 399,90/mês', 'valor' => 399.90, 'cor' => '#f59e0b', 'slug' => 'saas-enterprise-mensal'],
-];
-if (!isset($planosInfo[$planoSelecionado])) $planoSelecionado = 'starter';
+$planoSelecionado = sanitize($_GET['plano'] ?? $_POST['plano'] ?? array_key_first($planosInfo));
+if (!isset($planosInfo[$planoSelecionado])) $planoSelecionado = array_key_first($planosInfo);
 $planoAtual = $planosInfo[$planoSelecionado];
 
 // Rate limit: 3 tentativas por 10 minutos
@@ -430,25 +474,10 @@ $ufs = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','P
                 <h6 class="mb-0"><i class="fas fa-tag me-2"></i>Plano <?= e($planoAtual['nome']) ?></h6>
                 <span class="fw-bold" style="color: <?= $planoAtual['cor'] ?>; font-size: 1.2rem;"><?= e($planoAtual['preco']) ?></span>
             </div>
-            <?php if ($planoSelecionado === 'starter'): ?>
-                <div class="benefit-item"><i class="fas fa-check"></i> Até 500 produtos</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> 2 usuários</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> PDV completo</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> Controle de estoque</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> Relatórios básicos</div>
-            <?php elseif ($planoSelecionado === 'business'): ?>
-                <div class="benefit-item"><i class="fas fa-check"></i> Até 2.000 produtos</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> 5 usuários</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> PDV completo + estoque</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> Gestão de clientes</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> Relatórios avançados</div>
-            <?php else: ?>
-                <div class="benefit-item"><i class="fas fa-check"></i> Produtos ilimitados</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> Usuários ilimitados</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> PDV completo + estoque</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> Gestão de clientes</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> Relatórios avançados</div>
-                <div class="benefit-item"><i class="fas fa-check"></i> Suporte prioritário 24/7</div>
+            <?php if (!empty($planoAtual['beneficios'])): ?>
+                <?php foreach ($planoAtual['beneficios'] as $beneficio): ?>
+                    <div class="benefit-item"><i class="fas fa-check"></i> <?= e($beneficio) ?></div>
+                <?php endforeach; ?>
             <?php endif; ?>
             <div class="mt-2"><small class="text-muted"><i class="fas fa-gift me-1"></i>15 dias de teste grátis. O pagamento será configurado após o período de teste.</small></div>
             <div class="mt-2">
