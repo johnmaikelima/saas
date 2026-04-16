@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 flashError('A senha deve ter no mínimo 8 caracteres, com letras e números.');
                 redirect('usuarios/form.php?id=' . $id);
             }
-            $data['senha'] = hashPassword($senha);
+            $data['senha_hash'] = hashPassword($senha);
         }
         tenantUpdate('usuarios', $data, $id);
         flashSuccess('Usuário atualizado com sucesso!');
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flashError('A senha deve ter no mínimo 8 caracteres, com letras e números.');
             redirect('usuarios/form.php');
         }
-        $data['senha'] = hashPassword($senha);
+        $data['senha_hash'] = hashPassword($senha);
         tenantInsert('usuarios', $data);
         flashSuccess('Usuário cadastrado com sucesso!');
     }
