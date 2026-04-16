@@ -22,7 +22,6 @@ nixPkgs = [
 
 [phases.build]
 cmds = [
-    "composer install --no-dev --optimize-autoloader --no-interaction",
     "mkdir -p /app/public/uploads/logos",
     "mkdir -p /app/storage/logs",
     "mkdir -p /app/storage/certificados",
