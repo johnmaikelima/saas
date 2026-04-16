@@ -137,6 +137,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
             $erros[] = 'As senhas não conferem.';
         }
 
+        // Validar aceite dos termos
+        if (empty($_POST['aceite_termos'])) {
+            $erros[] = 'Você precisa aceitar os Termos de Uso e Política de Privacidade para se cadastrar.';
+        }
+
         // Se não há erros de validação, verificar duplicidade
         if (empty($erros)) {
             // Verificar CNPJ duplicado
@@ -213,8 +218,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
                     error_log('Painel API error: ' . $apiEx->getMessage());
                 }
 
-                // 2. Criar tenant
-                $stmt = $pdo->prepare("INSERT INTO tenants (razao_social, nome_fantasia, cnpj, email, telefone, cidade, estado, plano, licenca_chave, api_token, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo')");
+                // 2. Criar tenant (com aceite dos termos)
+                $stmt = $pdo->prepare("INSERT INTO tenants (razao_social, nome_fantasia, cnpj, email, telefone, cidade, estado, plano, licenca_chave, api_token, status, aceite_termos, aceite_termos_em, aceite_termos_ip, aceite_termos_versao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo', 1, NOW(), ?, '1.0')");
                 $stmt->execute([
                     $dados['nome_empresa'],
                     $dados['nome_fantasia'],
@@ -226,6 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
                     $planoSelecionado,
                     $licencaChave,
                     $painelApiToken,
+                    $_SERVER['REMOTE_ADDR'] ?? '',
                 ]);
                 $tenantId = (int) $pdo->lastInsertId();
 
@@ -269,7 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
 
                 validateSession();
 
-                auditLog('registro', 'Nova empresa cadastrada: ' . $dados['cnpj'] . ($licencaChave ? ' | Licença: ' . $licencaChave : ''), $tenantId, $usuarioId);
+                auditLog('registro', 'Nova empresa cadastrada: ' . $dados['cnpj'] . ($licencaChave ? ' | Licença: ' . $licencaChave : '') . ' | Aceite termos v1.0', $tenantId, $usuarioId);
 
                 rateLimitClear('register');
 
@@ -624,6 +630,18 @@ $ufs = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','P
                         <label for="confirmar_senha">Confirmar Senha <span class="text-danger">*</span></label>
                     </div>
                 </div>
+            </div>
+
+            <!-- Aceite dos Termos -->
+            <div class="form-check mb-3" style="background: #f8f9fa; border-radius: 8px; padding: 14px 16px; border: 1px solid #dee2e6;">
+                <input type="checkbox" class="form-check-input" id="aceite_termos" name="aceite_termos" value="1"
+                       <?= !empty($_POST['aceite_termos']) ? 'checked' : '' ?>
+                       <?= $bloqueado ? 'disabled' : '' ?> required>
+                <label class="form-check-label" for="aceite_termos" style="font-size: 0.9rem;">
+                    Li e aceito os <a href="/termos.php" target="_blank" style="color: #0f3460; font-weight: 600;">Termos de Uso e Política de Privacidade</a>,
+                    incluindo as condições sobre envio e armazenamento de Certificado Digital, emissão de NFC-e e tratamento de dados pessoais conforme a LGPD.
+                    <span class="text-danger">*</span>
+                </label>
             </div>
 
             <button type="submit" class="btn btn-primary btn-register w-100 mb-3" <?= $bloqueado ? 'disabled' : '' ?>>

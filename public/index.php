@@ -1021,8 +1021,8 @@ function slugCurto(string $slug): string {
             <div class="col-6 col-lg-2">
                 <div class="footer-title">Legal</div>
                 <ul class="footer-links">
-                    <li><a href="#">Termos de Uso</a></li>
-                    <li><a href="#">Privacidade</a></li>
+                    <li><a href="/termos.php">Termos de Uso</a></li>
+                    <li><a href="/termos.php#8-política-de-privacidade-e-proteção-de-dados-lgpd">Privacidade</a></li>
                 </ul>
             </div>
             <div class="col-6 col-lg-2">

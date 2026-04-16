@@ -9,6 +9,8 @@ $tid = tenantId();
 // Filtros
 $filtroStatus = $_GET['status'] ?? '';
 $filtroPeriodo = $_GET['periodo'] ?? 'mes';
+$filtroDataIni = sanitize($_GET['data_ini'] ?? '');
+$filtroDataFim = sanitize($_GET['data_fim'] ?? '');
 $filtroBusca = sanitize($_GET['busca'] ?? '');
 
 $where = "WHERE n.tenant_id = ?";
@@ -19,12 +21,28 @@ if ($filtroStatus && in_array($filtroStatus, ['autorizada', 'cancelada', 'erro',
     $params[] = $filtroStatus;
 }
 
-if ($filtroPeriodo === 'hoje') {
-    $where .= " AND DATE(n.criado_em) = CURDATE()";
-} elseif ($filtroPeriodo === 'semana') {
-    $where .= " AND n.criado_em >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
-} elseif ($filtroPeriodo === 'mes') {
-    $where .= " AND n.criado_em >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+// Período: datas manuais têm prioridade sobre período predefinido
+if (!empty($filtroDataIni) && !empty($filtroDataFim)) {
+    $where .= " AND DATE(n.criado_em) BETWEEN ? AND ?";
+    $params[] = $filtroDataIni;
+    $params[] = $filtroDataFim;
+    $filtroPeriodo = 'custom';
+} elseif (!empty($filtroDataIni)) {
+    $where .= " AND DATE(n.criado_em) >= ?";
+    $params[] = $filtroDataIni;
+    $filtroPeriodo = 'custom';
+} elseif (!empty($filtroDataFim)) {
+    $where .= " AND DATE(n.criado_em) <= ?";
+    $params[] = $filtroDataFim;
+    $filtroPeriodo = 'custom';
+} else {
+    if ($filtroPeriodo === 'hoje') {
+        $where .= " AND DATE(n.criado_em) = CURDATE()";
+    } elseif ($filtroPeriodo === 'semana') {
+        $where .= " AND n.criado_em >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+    } elseif ($filtroPeriodo === 'mes') {
+        $where .= " AND n.criado_em >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+    }
 }
 
 if (!empty($filtroBusca)) {
@@ -66,12 +84,25 @@ while ($row = $stmtTotais->fetch()) {
     $totais[$row['status']] = $row['qtd'];
 }
 
+// Query string para paginação
+$qsParams = array_filter([
+    'status' => $filtroStatus,
+    'periodo' => $filtroPeriodo !== 'custom' ? $filtroPeriodo : '',
+    'data_ini' => $filtroDataIni,
+    'data_fim' => $filtroDataFim,
+    'busca' => $filtroBusca,
+]);
+$qs = http_build_query($qsParams);
+
 require __DIR__ . '/../../app/includes/header.php';
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h5 class="page-title mb-0"><i class="fas fa-file-invoice me-2"></i>NFC-e Emitidas</h5>
     <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-success d-none" id="btnExportarXml" onclick="exportarXmlSelecionados()">
+            <i class="fas fa-download me-1"></i>Exportar XML (<span id="qtdSelecionados">0</span>)
+        </button>
         <a href="<?= baseUrl('nfce/inutilizar.php') ?>" class="btn btn-sm btn-outline-warning">
             <i class="fas fa-ban me-1"></i>Inutilizar
         </a>
@@ -120,10 +151,11 @@ require __DIR__ . '/../../app/includes/header.php';
 <!-- Filtros -->
 <div class="card shadow-sm mb-3">
     <div class="card-body py-2">
-        <form method="GET" class="row g-2 align-items-center">
+        <form method="GET" class="row g-2 align-items-end">
             <div class="col-auto">
+                <label class="form-label small mb-0">Status</label>
                 <select name="status" class="form-select form-select-sm">
-                    <option value="">Todos status</option>
+                    <option value="">Todos</option>
                     <option value="autorizada" <?= $filtroStatus === 'autorizada' ? 'selected' : '' ?>>Autorizada</option>
                     <option value="cancelada" <?= $filtroStatus === 'cancelada' ? 'selected' : '' ?>>Cancelada</option>
                     <option value="erro" <?= $filtroStatus === 'erro' ? 'selected' : '' ?>>Erro</option>
@@ -131,15 +163,26 @@ require __DIR__ . '/../../app/includes/header.php';
                 </select>
             </div>
             <div class="col-auto">
-                <select name="periodo" class="form-select form-select-sm">
+                <label class="form-label small mb-0">Período</label>
+                <select name="periodo" class="form-select form-select-sm" id="selectPeriodo" onchange="toggleDatas()">
                     <option value="hoje" <?= $filtroPeriodo === 'hoje' ? 'selected' : '' ?>>Hoje</option>
                     <option value="semana" <?= $filtroPeriodo === 'semana' ? 'selected' : '' ?>>Últimos 7 dias</option>
                     <option value="mes" <?= $filtroPeriodo === 'mes' ? 'selected' : '' ?>>Últimos 30 dias</option>
                     <option value="todos" <?= $filtroPeriodo === 'todos' ? 'selected' : '' ?>>Todos</option>
+                    <option value="custom" <?= $filtroPeriodo === 'custom' ? 'selected' : '' ?>>Personalizado</option>
                 </select>
             </div>
+            <div class="col-auto" id="filtroDataIniWrap" style="<?= $filtroPeriodo !== 'custom' ? 'display:none' : '' ?>">
+                <label class="form-label small mb-0">De</label>
+                <input type="date" name="data_ini" class="form-control form-control-sm" value="<?= e($filtroDataIni) ?>">
+            </div>
+            <div class="col-auto" id="filtroDataFimWrap" style="<?= $filtroPeriodo !== 'custom' ? 'display:none' : '' ?>">
+                <label class="form-label small mb-0">Até</label>
+                <input type="date" name="data_fim" class="form-control form-control-sm" value="<?= e($filtroDataFim) ?>">
+            </div>
             <div class="col-auto">
-                <input type="text" name="busca" class="form-control form-control-sm" placeholder="Chave, número ou venda..." value="<?= e($filtroBusca) ?>">
+                <label class="form-label small mb-0">Busca</label>
+                <input type="text" name="busca" class="form-control form-control-sm" placeholder="Chave, nº ou venda..." value="<?= e($filtroBusca) ?>">
             </div>
             <div class="col-auto">
                 <button class="btn btn-sm btn-primary"><i class="fas fa-search me-1"></i>Filtrar</button>
@@ -155,6 +198,7 @@ require __DIR__ . '/../../app/includes/header.php';
         <table class="table table-hover table-sm mb-0">
             <thead>
                 <tr>
+                    <th width="30"><input type="checkbox" id="checkAll" onclick="toggleAll()" title="Selecionar todos"></th>
                     <th>Número</th>
                     <th>Série</th>
                     <th>Venda</th>
@@ -167,10 +211,15 @@ require __DIR__ . '/../../app/includes/header.php';
             </thead>
             <tbody>
                 <?php if (empty($notas)): ?>
-                    <tr><td colspan="8" class="text-center text-muted py-4">Nenhuma NFC-e encontrada</td></tr>
+                    <tr><td colspan="9" class="text-center text-muted py-4">Nenhuma NFC-e encontrada</td></tr>
                 <?php else: ?>
                     <?php foreach ($notas as $n): ?>
                     <tr>
+                        <td>
+                            <?php if ($n['status'] === 'autorizada' && !empty($n['xml_autorizado'])): ?>
+                                <input type="checkbox" class="check-nfce" value="<?= $n['id'] ?>" onchange="atualizarSelecao()">
+                            <?php endif; ?>
+                        </td>
                         <td><strong><?= $n['numero'] ?></strong></td>
                         <td><?= $n['serie'] ?></td>
                         <td>
@@ -236,16 +285,53 @@ require __DIR__ . '/../../app/includes/header.php';
     <ul class="pagination pagination-sm justify-content-center">
         <?php for ($i = max(1, $page-2); $i <= min($totalPages, $page+2); $i++): ?>
             <li class="page-item <?= $i === $page ? 'active' : '' ?>">
-                <a class="page-link" href="?page=<?= $i ?>&status=<?= e($filtroStatus) ?>&periodo=<?= e($filtroPeriodo) ?>&busca=<?= e($filtroBusca) ?>"><?= $i ?></a>
+                <a class="page-link" href="?page=<?= $i ?>&<?= e($qs) ?>"><?= $i ?></a>
             </li>
         <?php endfor; ?>
     </ul>
 </nav>
 <?php endif; ?>
 
+<!-- Form oculto para exportação -->
+<form id="formExport" method="POST" action="<?= baseUrl('nfce/exportar-xml.php') ?>">
+    <?= csrfField() ?>
+    <input type="hidden" name="ids" id="exportIds">
+</form>
+
 <script>
 // Tooltips
 document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+
+// Toggle campos de data
+function toggleDatas() {
+    const custom = document.getElementById('selectPeriodo').value === 'custom';
+    document.getElementById('filtroDataIniWrap').style.display = custom ? '' : 'none';
+    document.getElementById('filtroDataFimWrap').style.display = custom ? '' : 'none';
+}
+
+// Selecionar todos
+function toggleAll() {
+    const checked = document.getElementById('checkAll').checked;
+    document.querySelectorAll('.check-nfce').forEach(cb => cb.checked = checked);
+    atualizarSelecao();
+}
+
+// Atualizar contagem e botão
+function atualizarSelecao() {
+    const selecionados = document.querySelectorAll('.check-nfce:checked');
+    const qtd = selecionados.length;
+    const btn = document.getElementById('btnExportarXml');
+    document.getElementById('qtdSelecionados').textContent = qtd;
+    btn.classList.toggle('d-none', qtd === 0);
+}
+
+// Exportar XMLs selecionados
+function exportarXmlSelecionados() {
+    const ids = Array.from(document.querySelectorAll('.check-nfce:checked')).map(cb => cb.value);
+    if (ids.length === 0) return;
+    document.getElementById('exportIds').value = ids.join(',');
+    document.getElementById('formExport').submit();
+}
 </script>
 
 <?php require __DIR__ . '/../../app/includes/footer.php'; ?>
