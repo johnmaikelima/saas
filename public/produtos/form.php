@@ -133,12 +133,17 @@ require __DIR__ . '/../../app/includes/header.php';
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Categoria</label>
-                    <select name="categoria_id" class="form-select">
-                        <option value="">Sem categoria</option>
-                        <?php foreach ($categorias as $cat): ?>
-                            <option value="<?= $cat['id'] ?>" <?= ($produto['categoria_id'] ?? 0) == $cat['id'] ? 'selected' : '' ?>><?= e($cat['nome']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div class="input-group">
+                        <select name="categoria_id" id="categoriaSelect" class="form-select">
+                            <option value="">Sem categoria</option>
+                            <?php foreach ($categorias as $cat): ?>
+                                <option value="<?= $cat['id'] ?>" <?= ($produto['categoria_id'] ?? 0) == $cat['id'] ? 'selected' : '' ?>><?= e($cat['nome']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalNovaCategoria" title="Nova categoria">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Foto</label>
@@ -232,7 +237,121 @@ require __DIR__ . '/../../app/includes/header.php';
     </div>
 </form>
 
+<!-- Modal Nova Categoria -->
+<div class="modal fade" id="modalNovaCategoria" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-folder-plus me-2"></i>Nova Categoria</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="catErro" class="alert alert-danger py-2 d-none"></div>
+                <div class="mb-3">
+                    <label class="form-label">Nome <span class="text-danger">*</span></label>
+                    <input type="text" id="catNome" class="form-control" maxlength="100" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Cor</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="color" id="catCor" class="form-control form-control-color" value="#6c757d">
+                        <span class="badge" id="catCorPreview" style="background-color:#6c757d">Exemplo</span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ícone (classe Font Awesome)</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i id="catIconePreview" class="fas fa-tag"></i></span>
+                        <input type="text" id="catIcone" class="form-control" placeholder="fas fa-tag">
+                    </div>
+                    <small class="text-muted">Ex: fas fa-pizza-slice, fas fa-glass-water, fas fa-shirt</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnSalvarCategoria">
+                    <i class="fas fa-save me-1"></i>Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+// Nova Categoria via modal
+(function() {
+    const modal = document.getElementById('modalNovaCategoria');
+    const btnSalvar = document.getElementById('btnSalvarCategoria');
+    const catNome = document.getElementById('catNome');
+    const catCor = document.getElementById('catCor');
+    const catIcone = document.getElementById('catIcone');
+    const catErro = document.getElementById('catErro');
+    const catCorPreview = document.getElementById('catCorPreview');
+    const catIconePreview = document.getElementById('catIconePreview');
+
+    catCor.addEventListener('input', () => {
+        catCorPreview.style.backgroundColor = catCor.value;
+    });
+
+    catIcone.addEventListener('input', () => {
+        catIconePreview.className = catIcone.value || 'fas fa-tag';
+    });
+
+    modal.addEventListener('shown.bs.modal', () => catNome.focus());
+    modal.addEventListener('hidden.bs.modal', () => {
+        catNome.value = '';
+        catCor.value = '#6c757d';
+        catCorPreview.style.backgroundColor = '#6c757d';
+        catIcone.value = '';
+        catIconePreview.className = 'fas fa-tag';
+        catErro.classList.add('d-none');
+    });
+
+    btnSalvar.addEventListener('click', async () => {
+        const nome = catNome.value.trim();
+        if (!nome) {
+            catErro.textContent = 'O nome da categoria é obrigatório.';
+            catErro.classList.remove('d-none');
+            catNome.focus();
+            return;
+        }
+
+        btnSalvar.disabled = true;
+        btnSalvar.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Salvando...';
+
+        const formData = new FormData();
+        formData.append('nome', nome);
+        formData.append('cor', catCor.value);
+        formData.append('icone', catIcone.value);
+        formData.append('csrf_token', '<?= csrfToken() ?>');
+
+        try {
+            const resp = await fetch('<?= baseUrl("api/categorias.php") ?>', { method: 'POST', body: formData });
+            const data = await resp.json();
+
+            if (data.ok) {
+                const select = document.getElementById('categoriaSelect');
+                const option = new Option(data.nome, data.id, true, true);
+                select.add(option, select.options[select.options.length]);
+                bootstrap.Modal.getInstance(modal).hide();
+            } else {
+                catErro.textContent = data.mensagem || 'Erro ao salvar.';
+                catErro.classList.remove('d-none');
+            }
+        } catch (e) {
+            catErro.textContent = 'Erro de conexão. Tente novamente.';
+            catErro.classList.remove('d-none');
+        } finally {
+            btnSalvar.disabled = false;
+            btnSalvar.innerHTML = '<i class="fas fa-save me-1"></i>Salvar';
+        }
+    });
+
+    catNome.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); btnSalvar.click(); }
+    });
+})();
+
 function calcularMargem() {
     const custo = parseFloat(document.getElementById('precoCusto').value) || 0;
     const venda = parseFloat(document.getElementById('precoVenda').value) || 0;
