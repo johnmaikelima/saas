@@ -159,17 +159,69 @@ try {
         $stmtPag->execute([$tid, $vendaId, $pag['forma'], $pag['valor'], $trocoItem]);
     }
 
-    // SaaS: sem emissão de NFC-e (não há ACBr local)
-
     $pdo->commit();
 
-    echo json_encode([
+    // Emitir NFC-e se solicitado e configuração fiscal está completa
+    $emitirNfce = !empty($input['emitir_nfce']);
+    $nfceResult = null;
+
+    if ($emitirNfce) {
+        try {
+            $nfceHelper = new NfceHelper($tid);
+            $configCheck = $nfceHelper->verificarConfiguracao();
+
+            if ($configCheck['ok']) {
+                // Buscar itens com dados fiscais dos produtos
+                $stmtNfceItens = $pdo->prepare("
+                    SELECT vi.*, p.codigo_barras, p.ncm, p.cfop, p.cest, p.cst_csosn, p.unidade
+                    FROM venda_itens vi
+                    JOIN produtos p ON p.id = vi.produto_id
+                    WHERE vi.venda_id = ? AND vi.tenant_id = ?
+                ");
+                $stmtNfceItens->execute([$vendaId, $tid]);
+                $itensNfce = $stmtNfceItens->fetchAll();
+
+                // Buscar pagamentos da venda
+                $stmtPags = $pdo->prepare("SELECT forma, valor FROM venda_pagamentos WHERE venda_id = ? AND tenant_id = ?");
+                $stmtPags->execute([$vendaId, $tid]);
+                $pagsNfce = $stmtPags->fetchAll();
+
+                $vendaData = [
+                    'id' => $vendaId,
+                    'total' => $total,
+                    'troco' => $troco,
+                    'cpf_cnpj_nota' => $cpfCnpj,
+                    'pagamentos' => $pagsNfce,
+                ];
+
+                $nfceResult = $nfceHelper->emitir($vendaData, $itensNfce);
+            } else {
+                $nfceResult = ['ok' => false, 'msg' => 'Configuração fiscal incompleta: ' . implode(', ', $configCheck['erros'])];
+            }
+        } catch (\Exception $e) {
+            error_log('Erro NFC-e venda #' . $vendaId . ': ' . $e->getMessage());
+            $nfceResult = ['ok' => false, 'msg' => 'Erro ao emitir NFC-e: ' . $e->getMessage()];
+        }
+    }
+
+    $response = [
         'ok' => true,
         'msg' => 'Venda #' . $vendaId . ' finalizada com sucesso!',
         'venda_id' => $vendaId,
         'total' => $total,
         'troco' => $troco,
-    ]);
+    ];
+
+    if ($nfceResult) {
+        $response['nfce'] = $nfceResult;
+        if ($nfceResult['ok']) {
+            $response['msg'] .= ' NFC-e emitida!';
+        } else {
+            $response['msg'] .= ' (NFC-e: ' . $nfceResult['msg'] . ')';
+        }
+    }
+
+    echo json_encode($response);
 
 } catch (Exception $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();

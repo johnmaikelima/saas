@@ -12,6 +12,15 @@ if (!$caixa) {
 
 $nomeLoja = getConfig('nome_loja', APP_NAME);
 $empresa = getEmpresa();
+
+// Verificar se NFC-e está configurado
+$nfceConfigurado = false;
+try {
+    $nfceHelper = new NfceHelper(tenantId());
+    $nfceCheck = $nfceHelper->verificarConfiguracao();
+    $nfceConfigurado = $nfceCheck['ok'];
+} catch (\Exception) {}
+$nfceAmbiente = (int) getConfig('nfce_ambiente', '2');
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -221,11 +230,30 @@ $empresa = getEmpresa();
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success btn-lg" onclick="finalizarVenda()" id="btnConfirmarVenda">
-                        <i class="fas fa-check me-2"></i>Confirmar Venda
-                    </button>
+                <div class="modal-footer justify-content-between">
+                    <div>
+                        <?php if ($nfceConfigurado): ?>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="emitirNfce" checked>
+                            <label class="form-check-label" for="emitirNfce">
+                                <i class="fas fa-file-invoice me-1"></i>Emitir NFC-e
+                                <?php if ($nfceAmbiente === 2): ?>
+                                    <span class="badge bg-warning text-dark ms-1">Homologação</span>
+                                <?php endif; ?>
+                            </label>
+                        </div>
+                        <?php else: ?>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>NFC-e não configurada
+                        </small>
+                        <?php endif; ?>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-success btn-lg" onclick="finalizarVenda()" id="btnConfirmarVenda">
+                            <i class="fas fa-check me-2"></i>Confirmar Venda
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -283,6 +311,7 @@ $empresa = getEmpresa();
     <input type="hidden" id="caixaId" value="<?= $caixa['id'] ?>">
     <input type="hidden" id="csrfToken" value="<?= csrfToken() ?>">
     <input type="hidden" id="baseUrl" value="<?= APP_URL ?>">
+    <input type="hidden" id="nfceConfigurado" value="<?= $nfceConfigurado ? '1' : '0' ?>">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?= baseUrl('assets/js/pdv.js') ?>"></script>

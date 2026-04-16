@@ -8,6 +8,12 @@ require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/flash.php';
 require_once __DIR__ . '/includes/security.php';
 
+// Autoload do Composer (sped-nfe, sped-da)
+$composerAutoload = dirname(__DIR__) . '/vendor/autoload.php';
+if (file_exists($composerAutoload)) {
+    require_once $composerAutoload;
+}
+
 // ============================================
 //   Headers de segurança (todas as respostas)
 // ============================================

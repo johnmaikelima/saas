@@ -80,6 +80,11 @@ $caixaAberto = $user ? getCaixaAberto() : null;
 
                 <?php if (temPerfil('admin', 'gerente')): ?>
                 <li class="nav-item">
+                    <a class="nav-link" href="<?= baseUrl('nfce/') ?>">
+                        <i class="fas fa-file-invoice me-1"></i>NFC-e
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="<?= baseUrl('relatorios/') ?>">
                         <i class="fas fa-chart-bar me-1"></i>Relatórios
                     </a>

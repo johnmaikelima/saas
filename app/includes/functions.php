@@ -358,3 +358,29 @@ function agora(): string {
 function sanitize(?string $str): string {
     return trim(strip_tags($str ?? ''));
 }
+
+/**
+ * Encriptar valor sensível (AES-256-GCM)
+ * Usa APP_KEY ou PAINEL_API_SECRET como chave de encriptação
+ */
+function encryptValue(string $value): string {
+    $key = hash('sha256', $_ENV['APP_KEY'] ?? PAINEL_API_SECRET ?? 'kaixa-default-key', true);
+    $iv = random_bytes(12);
+    $tag = '';
+    $encrypted = openssl_encrypt($value, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+    return base64_encode($iv . $tag . $encrypted);
+}
+
+/**
+ * Decriptar valor sensível (AES-256-GCM)
+ */
+function decryptValue(string $encoded): string {
+    $key = hash('sha256', $_ENV['APP_KEY'] ?? PAINEL_API_SECRET ?? 'kaixa-default-key', true);
+    $data = base64_decode($encoded);
+    if ($data === false || strlen($data) < 28) return '';
+    $iv = substr($data, 0, 12);
+    $tag = substr($data, 12, 16);
+    $encrypted = substr($data, 28);
+    $decrypted = openssl_decrypt($encrypted, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+    return $decrypted !== false ? $decrypted : '';
+}

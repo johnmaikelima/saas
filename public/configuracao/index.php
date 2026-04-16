@@ -39,9 +39,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         auditLog('config_sistema', 'Configurações do sistema atualizadas');
         flashSuccess('Configurações do sistema atualizadas.');
+    } elseif ($secao === 'fiscal') {
+        // Configurações fiscais NFC-e
+        setConfig('nfce_ambiente', $_POST['nfce_ambiente'] === '1' ? '1' : '2', 'fiscal');
+        setConfig('nfce_serie', max(1, (int)($_POST['nfce_serie'] ?? 1)) . '', 'fiscal');
+        setConfig('nfce_numero', max(1, (int)($_POST['nfce_numero'] ?? 1)) . '', 'fiscal');
+        setConfig('nfce_csc', sanitize($_POST['nfce_csc'] ?? ''), 'fiscal');
+        setConfig('nfce_csc_id', sanitize($_POST['nfce_csc_id'] ?? ''), 'fiscal');
+        setConfig('codigo_ibge_municipio', sanitize($_POST['codigo_ibge_municipio'] ?? ''), 'fiscal');
+        setConfig('impressora_largura', in_array($_POST['impressora_largura'] ?? '80', ['58','80']) ? $_POST['impressora_largura'] : '80', 'fiscal');
+
+        // Upload certificado A1
+        if (!empty($_FILES['certificado']['name'])) {
+            $certFile = $_FILES['certificado'];
+            if ($certFile['error'] === UPLOAD_ERR_OK && $certFile['size'] <= 10 * 1024 * 1024) {
+                $certDir = STORAGE_PATH . '/certificados/' . $tid;
+                if (!is_dir($certDir)) mkdir($certDir, 0755, true);
+
+                $certPath = $certDir . '/certificado.pfx';
+                $senhaCert = $_POST['certificado_senha'] ?? '';
+
+                // Validar certificado antes de salvar
+                try {
+                    $certContent = file_get_contents($certFile['tmp_name']);
+                    \NFePHP\Common\Certificate::readPfx($certContent, $senhaCert);
+                    file_put_contents($certPath, $certContent);
+                    chmod($certPath, 0600);
+                    setConfig('certificado_senha', encryptValue($senhaCert), 'fiscal');
+
+                    // Ler validade do certificado
+                    $certData = [];
+                    if (openssl_pkcs12_read($certContent, $certData, $senhaCert)) {
+                        $certInfo = openssl_x509_parse($certData['cert']);
+                        if ($certInfo && isset($certInfo['validTo_time_t'])) {
+                            setConfig('certificado_validade', date('Y-m-d', $certInfo['validTo_time_t']), 'fiscal');
+                        }
+                    }
+
+                    flashSuccess('Certificado digital salvo com sucesso!');
+                } catch (\Exception $e) {
+                    flashError('Erro ao ler certificado: Verifique a senha e o arquivo .pfx');
+                }
+            } else {
+                flashError('Erro no upload do certificado.');
+            }
+        } elseif (!empty(trim($_POST['certificado_senha'] ?? ''))) {
+            // Atualizar só a senha (encriptada) - só se preencheu
+            setConfig('certificado_senha', encryptValue(trim($_POST['certificado_senha'])), 'fiscal');
+        }
+
+        auditLog('config_fiscal', 'Configurações fiscais atualizadas');
+        flashSuccess('Configurações fiscais atualizadas.');
     }
 
-    redirect('configuracao/');
+    redirect('configuracao/' . ($secao === 'fiscal' ? '#fiscal' : ''));
 }
 
 $empresa = getEmpresa();
@@ -55,6 +106,7 @@ require __DIR__ . '/../../app/includes/header.php';
 <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#empresa">Empresa</a></li>
     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#sistema">Sistema</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#fiscal" id="tab-fiscal">Fiscal (NFC-e)</a></li>
 </ul>
 
 <div class="tab-content mt-3">
@@ -134,6 +186,152 @@ require __DIR__ . '/../../app/includes/header.php';
             </div>
         </div>
     </div>
+
+    <div class="tab-pane fade" id="fiscal">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header"><h6 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Configurações NFC-e</h6></div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="secao" value="fiscal">
+
+                    <?php
+                    $certPath = STORAGE_PATH . '/certificados/' . $tid . '/certificado.pfx';
+                    $certExiste = file_exists($certPath);
+                    $certValidade = getConfig('certificado_validade', '');
+                    $certVencido = !empty($certValidade) && strtotime($certValidade) < time();
+                    ?>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <h6 class="text-muted border-bottom pb-2 mb-3">Certificado Digital A1</h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Certificado (.pfx)</label>
+                            <input type="file" class="form-control" name="certificado" accept=".pfx,.p12">
+                            <?php if ($certExiste): ?>
+                                <small class="text-success"><i class="fas fa-check-circle me-1"></i>Certificado instalado</small>
+                                <?php if (!empty($certValidade)): ?>
+                                    <small class="<?= $certVencido ? 'text-danger' : 'text-muted' ?> ms-2">
+                                        Validade: <?= formatDate($certValidade) ?>
+                                        <?= $certVencido ? ' (VENCIDO!)' : '' ?>
+                                    </small>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <small class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>Nenhum certificado instalado</small>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Senha do Certificado</label>
+                            <input type="password" class="form-control" name="certificado_senha" placeholder="<?= !empty(getConfig('certificado_senha', '')) ? '••••••••' : 'Senha do arquivo .pfx' ?>">
+                            <?php if (!empty(getConfig('certificado_senha', ''))): ?>
+                                <small class="text-muted">Senha já cadastrada. Deixe em branco para manter.</small>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <h6 class="text-muted border-bottom pb-2 mb-3">Dados SEFAZ</h6>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Ambiente</label>
+                            <select class="form-select" name="nfce_ambiente">
+                                <option value="2" <?= getConfig('nfce_ambiente', '2') === '2' ? 'selected' : '' ?>>Homologação (testes)</option>
+                                <option value="1" <?= getConfig('nfce_ambiente', '2') === '1' ? 'selected' : '' ?>>Produção</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Série NFC-e</label>
+                            <input type="number" class="form-control" name="nfce_serie" value="<?= e(getConfig('nfce_serie', '1')) ?>" min="1">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Próximo Número</label>
+                            <input type="number" class="form-control" name="nfce_numero" value="<?= e(getConfig('nfce_numero', '1')) ?>" min="1">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Cód. IBGE Município</label>
+                            <input type="text" class="form-control" name="codigo_ibge_municipio" value="<?= e(getConfig('codigo_ibge_municipio', '')) ?>" placeholder="Ex: 3550308" maxlength="7">
+                            <small class="text-muted">7 dígitos. Consulte no IBGE.</small>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">CSC (Token)</label>
+                            <input type="text" class="form-control" name="nfce_csc" value="<?= e(getConfig('nfce_csc', '')) ?>" placeholder="Código de Segurança do Contribuinte">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">CSC ID (ID do Token)</label>
+                            <input type="text" class="form-control" name="nfce_csc_id" value="<?= e(getConfig('nfce_csc_id', '')) ?>" placeholder="Ex: 000001">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Largura Impressão</label>
+                            <select class="form-select" name="impressora_largura">
+                                <option value="80" <?= getConfig('impressora_largura', '80') === '80' ? 'selected' : '' ?>>80mm (padrão)</option>
+                                <option value="58" <?= getConfig('impressora_largura', '80') === '58' ? 'selected' : '' ?>>58mm</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Salvar Configurações Fiscais</button>
+                        <button type="button" class="btn btn-outline-info" id="btnTestarSefaz">
+                            <i class="fas fa-satellite-dish me-1"></i>Testar Conexão SEFAZ
+                        </button>
+                        <span id="sefazStatus"></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <?php
+        // Verificação rápida da configuração
+        $nfceHelper = new NfceHelper($tid);
+        $configCheck = $nfceHelper->verificarConfiguracao();
+        ?>
+        <?php if (!$configCheck['ok']): ?>
+        <div class="alert alert-warning">
+            <h6><i class="fas fa-exclamation-triangle me-2"></i>Configuração Incompleta</h6>
+            <ul class="mb-0">
+                <?php foreach ($configCheck['erros'] as $erro): ?>
+                    <li><?= e($erro) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <?php else: ?>
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i>Configuração fiscal completa! Pronto para emitir NFC-e.
+        </div>
+        <?php endif; ?>
+    </div>
 </div>
+
+<script>
+document.getElementById('btnTestarSefaz')?.addEventListener('click', function() {
+    const btn = this;
+    const status = document.getElementById('sefazStatus');
+    btn.disabled = true;
+    status.innerHTML = '<span class="text-muted"><i class="fas fa-spinner fa-spin me-1"></i>Consultando...</span>';
+
+    fetch('<?= APP_URL ?>/api/nfce-status.php', {
+        headers: {'X-CSRF-Token': '<?= csrfToken() ?>'}
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.online) {
+            status.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>SEFAZ Online - ' + data.mensagem + '</span>';
+        } else {
+            status.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + data.mensagem + '</span>';
+        }
+    })
+    .catch(() => {
+        status.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>Erro ao consultar</span>';
+    })
+    .finally(() => btn.disabled = false);
+});
+
+// Ativar aba fiscal se URL tem #fiscal
+if (window.location.hash === '#fiscal') {
+    document.getElementById('tab-fiscal')?.click();
+}
+</script>
 
 <?php require __DIR__ . '/../../app/includes/footer.php'; ?>

@@ -187,7 +187,7 @@ function renderItens() {
             </td>
             <td>${formatMoney(item.valor_unitario)}</td>
             <td>
-                <input type="number" class="form-control form-control-sm bg-dark text-light border-secondary"
+                <input type="number" class="form-control form-control-sm"
                        value="${item.desconto}" min="0" step="0.01" style="width:80px"
                        onchange="setDescItem(${i}, this.value)">
             </td>
@@ -363,6 +363,10 @@ function finalizarVenda() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
 
+    // Verificar se deve emitir NFC-e
+    const emitirNfceCheckbox = document.getElementById('emitirNfce');
+    const emitirNfce = emitirNfceCheckbox ? emitirNfceCheckbox.checked : false;
+
     const data = {
         itens: itens,
         pagamentos: pagamentos,
@@ -370,7 +374,12 @@ function finalizarVenda() {
         desconto_valor: parseFloat(document.getElementById('descontoGeral').value) || 0,
         cpf_cnpj: document.getElementById('cpfCnpjNota').value,
         caixa_id: CAIXA_ID,
+        emitir_nfce: emitirNfce,
     };
+
+    if (emitirNfce) {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Emitindo NFC-e...';
+    }
 
     fetch(`${BASE_URL}/pdv/finalizar.php`, {
         method: 'POST',
@@ -388,7 +397,16 @@ function finalizarVenda() {
                 msg += `\n\nTROCO: ${formatMoney(result.troco)}`;
             }
 
-            alert(msg);
+            // Se emitiu NFC-e com sucesso, oferecer DANFCE
+            if (result.nfce && result.nfce.ok && result.nfce.chave) {
+                msg += `\n\nChave NFC-e: ${result.nfce.chave}`;
+                alert(msg);
+                // Abrir DANFCE em nova aba
+                window.open(`${BASE_URL}/nfce/danfce.php?chave=${result.nfce.chave}`, '_blank');
+            } else {
+                alert(msg);
+            }
+
             novaVenda();
         } else {
             alert('Erro: ' + result.msg);
