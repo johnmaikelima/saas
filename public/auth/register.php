@@ -176,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
                         'cidade'         => $dados['cidade'],
                         'uf'             => $dados['uf'],
                         'plano_slug'     => $planoAtual['slug'],
+                        'login_saas'     => $dados['login'],
                     ]);
 
                     $ch = curl_init(PAINEL_API_URL . '?action=registrar_saas');
