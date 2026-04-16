@@ -21,7 +21,7 @@ $caixaAberto = $user ? getCaixaAberto() : null;
 <body>
 
 <?php if ($user): ?>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg shadow-sm">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="<?= baseUrl('dashboard/') ?>">
             <i class="fas fa-cash-register me-2"></i><?= e($nomeLoja) ?>
@@ -45,7 +45,7 @@ $caixaAberto = $user ? getCaixaAberto() : null;
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         <i class="fas fa-boxes-stacked me-1"></i>Cadastros
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark">
+                    <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?= baseUrl('produtos/') ?>"><i class="fas fa-barcode me-2"></i>Produtos</a></li>
                         <li><a class="dropdown-item" href="<?= baseUrl('categorias/') ?>"><i class="fas fa-tags me-2"></i>Categorias</a></li>
                         <li><a class="dropdown-item" href="<?= baseUrl('clientes/') ?>"><i class="fas fa-users me-2"></i>Clientes</a></li>
@@ -55,7 +55,7 @@ $caixaAberto = $user ? getCaixaAberto() : null;
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         <i class="fas fa-warehouse me-1"></i>Estoque
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark">
+                    <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?= baseUrl('estoque/') ?>"><i class="fas fa-boxes-stacked me-2"></i>Movimentações</a></li>
                         <li><a class="dropdown-item" href="<?= baseUrl('estoque/entrada.php') ?>"><i class="fas fa-arrow-down me-2"></i>Entrada</a></li>
                         <li><a class="dropdown-item" href="<?= baseUrl('estoque/historico.php') ?>"><i class="fas fa-history me-2"></i>Histórico</a></li>
@@ -70,7 +70,7 @@ $caixaAberto = $user ? getCaixaAberto() : null;
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         <i class="fas fa-cash-register me-1"></i>Caixa
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark">
+                    <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?= baseUrl('caixa/') ?>"><i class="fas fa-desktop me-2"></i>Painel do Caixa</a></li>
                         <li><a class="dropdown-item" href="<?= baseUrl('caixa/abrir.php') ?>"><i class="fas fa-door-open me-2"></i>Abrir Caixa</a></li>
                         <li><a class="dropdown-item" href="<?= baseUrl('caixa/sangria.php') ?>"><i class="fas fa-arrow-up me-2"></i>Sangria</a></li>
@@ -96,7 +96,7 @@ $caixaAberto = $user ? getCaixaAberto() : null;
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         <i class="fas fa-cog me-1"></i>Admin
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark">
+                    <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?= baseUrl('usuarios/') ?>"><i class="fas fa-user-shield me-2"></i>Usuários</a></li>
                         <li><a class="dropdown-item" href="<?= baseUrl('configuracao/') ?>"><i class="fas fa-sliders me-2"></i>Configurações</a></li>
                     </ul>
@@ -116,7 +116,7 @@ $caixaAberto = $user ? getCaixaAberto() : null;
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         <i class="fas fa-user me-1"></i><?= e($user['nome']) ?>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                    <ul class="dropdown-menu dropdown-menu-end">
                         <li><span class="dropdown-item-text text-muted small"><?= ucfirst(e($user['perfil'])) ?></span></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="<?= baseUrl('auth/logout.php') ?>"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>

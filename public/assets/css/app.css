@@ -13,10 +13,63 @@ body {
 main { flex: 1; }
 
 /* Navbar */
-.navbar { padding: 0.4rem 1rem; }
-.navbar-brand { font-size: 1.1rem; }
-.nav-link { font-size: 0.9rem; padding: 0.5rem 0.75rem !important; }
-.dropdown-menu-dark { font-size: 0.9rem; }
+.navbar {
+    padding: 0.4rem 1rem;
+    background: linear-gradient(135deg, #002C87 0%, #001a52 100%) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.navbar-brand {
+    font-size: 1.1rem;
+    color: #fff !important;
+    letter-spacing: 0.5px;
+}
+.navbar-brand:hover { color: rgba(255,255,255,0.9) !important; }
+.navbar .nav-link {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem !important;
+    color: rgba(255,255,255,0.85) !important;
+    transition: color 0.2s, background 0.2s;
+    border-radius: 6px;
+}
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+    color: #fff !important;
+    background: rgba(255,255,255,0.12);
+}
+.navbar .nav-link.active,
+.navbar .nav-item.active > .nav-link {
+    color: #fff !important;
+    background: rgba(255,255,255,0.18);
+}
+.navbar .dropdown-menu {
+    background: #001a52;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    margin-top: 4px;
+}
+.navbar .dropdown-item {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    margin: 2px 4px;
+}
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+}
+.navbar .dropdown-item-text { color: rgba(255,255,255,0.5) !important; }
+.navbar .dropdown-divider { border-color: rgba(255,255,255,0.1); }
+.navbar .text-success { color: #4ade80 !important; }
+.navbar .text-danger { color: #f87171 !important; }
+.navbar-toggler {
+    border-color: rgba(255,255,255,0.3);
+}
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
 
 /* Cards */
 .card { border: none; border-radius: 10px; }
