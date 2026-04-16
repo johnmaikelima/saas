@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'ncm'            => sanitize($_POST['ncm'] ?? ''),
         'cfop'           => sanitize($_POST['cfop'] ?? ''),
         'cest'           => sanitize($_POST['cest'] ?? ''),
-        'cst'            => sanitize($_POST['cst'] ?? ''),
+        'cst_csosn'      => sanitize($_POST['cst'] ?? ''),
         'ativo'          => isset($_POST['ativo']) ? 1 : 0,
     ];
 
@@ -211,7 +211,7 @@ require __DIR__ . '/../../app/includes/header.php';
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">CST</label>
-                    <input type="text" name="cst" class="form-control" value="<?= e($produto['cst'] ?? '') ?>" maxlength="10">
+                    <input type="text" name="cst" class="form-control" value="<?= e($produto['cst_csosn'] ?? '') ?>" maxlength="10">
                 </div>
             </div>
         </div>
