@@ -85,12 +85,30 @@ function rateLimitClear(string $action): void {
 //   Obter IP real do cliente
 // ============================================
 function getClientIp(): string {
-    // Apenas confiar em X-Forwarded-For se estiver atrás de proxy conhecido
-    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    // Confiar em X-Forwarded-For apenas se vindo de proxy confiável (Coolify/Docker)
+    $remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    $trustedProxies = ['127.0.0.1', '::1', '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'];
+
+    $isTrusted = false;
+    foreach ($trustedProxies as $proxy) {
+        if (str_contains($proxy, '/')) {
+            // CIDR check simplificado
+            [$subnet, $mask] = explode('/', $proxy);
+            if ((ip2long($remoteAddr) & ~((1 << (32 - (int)$mask)) - 1)) === ip2long($subnet)) {
+                $isTrusted = true;
+                break;
+            }
+        } elseif ($remoteAddr === $proxy) {
+            $isTrusted = true;
+            break;
+        }
+    }
+
+    if ($isTrusted && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
         $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
         return trim($ips[0]);
     }
-    return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    return $remoteAddr;
 }
 
 // ============================================

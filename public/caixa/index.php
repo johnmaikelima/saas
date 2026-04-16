@@ -62,8 +62,8 @@ $stmt = $pdo->prepare("SELECT cx.*, u.nome as operador
     LEFT JOIN usuarios u ON u.id = cx.usuario_id
     WHERE cx.tenant_id = ?
     ORDER BY cx.aberto_em DESC
-    LIMIT {$perPage} OFFSET {$offset}");
-$stmt->execute([$tid]);
+    LIMIT ? OFFSET ?");
+$stmt->execute([$tid, $perPage, $offset]);
 $historico = $stmt->fetchAll();
 
 $pag = [

@@ -7,9 +7,16 @@
 
 require_once __DIR__ . '/../app/config.php';
 
-// Verificar chave de setup
+// Bloquear se já foi executado
+$lockFile = STORAGE_PATH . '/.setup_complete';
+if (file_exists($lockFile)) {
+    http_response_code(403);
+    die('<h1>Setup ja executado</h1><p>Remova <code>storage/.setup_complete</code> para executar novamente.</p>');
+}
+
+// Verificar chave de setup via variável de ambiente
 $key = $_GET['key'] ?? '';
-if (empty($key) || $key !== SETUP_KEY) {
+if (empty(SETUP_KEY) || empty($key) || !hash_equals(SETUP_KEY, $key)) {
     http_response_code(403);
     echo '<h1>Acesso negado</h1><p>Informe a chave de setup: <code>setup.php?key=SUA_CHAVE</code></p>';
     exit;
@@ -84,11 +91,14 @@ try {
         }
     }
 
+    // Criar lockfile para impedir re-execução
+    @file_put_contents($lockFile, date('Y-m-d H:i:s'));
     $messages[] = "<strong class='text-success'>Setup concluído com sucesso!</strong>";
 
 } catch (PDOException $e) {
     $error = true;
-    $messages[] = "<strong class='text-danger'>Erro: " . htmlspecialchars($e->getMessage()) . "</strong>";
+    error_log('Setup error: ' . $e->getMessage());
+    $messages[] = "<strong class='text-danger'>Erro ao executar setup. Verifique os logs.</strong>";
 }
 ?>
 <!DOCTYPE html>

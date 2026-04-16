@@ -173,5 +173,6 @@ try {
 
 } catch (Exception $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
-    echo json_encode(['ok' => false, 'msg' => 'Erro: ' . $e->getMessage()]);
+    error_log('Erro finalizar venda: ' . $e->getMessage());
+    echo json_encode(['ok' => false, 'msg' => 'Erro ao finalizar venda. Tente novamente.']);
 }
