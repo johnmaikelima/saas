@@ -105,6 +105,13 @@ $caixaAberto = $user ? getCaixaAberto() : null;
             </ul>
 
             <ul class="navbar-nav">
+                <?php if (!empty($_SESSION['impersonate'])): ?>
+                <li class="nav-item me-3">
+                    <span class="nav-link" style="background: rgba(250,204,21,0.2); color: #fbbf24; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
+                        <i class="fas fa-eye me-1"></i>Acesso Admin
+                    </span>
+                </li>
+                <?php endif; ?>
                 <li class="nav-item me-3">
                     <?php if ($caixaAberto): ?>
                         <span class="nav-link text-success"><i class="fas fa-circle me-1"></i>Caixa Aberto</span>
