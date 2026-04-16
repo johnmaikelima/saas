@@ -1,6 +1,6 @@
 <?php
 /**
- * Configurações globais do SaaS PDV Pro
+ * Configurações globais do SaaS Kaixa
  */
 
 // Caminhos
@@ -18,7 +18,7 @@ define('DB_USER', $_ENV['DB_USER'] ?? 'root');
 define('DB_PASS', $_ENV['DB_PASS'] ?? '');
 
 // Aplicação
-define('APP_NAME', 'PDV Pro');
+define('APP_NAME', 'Kaixa');
 define('APP_VERSION', '1.0.0');
 
 // URL base
@@ -34,4 +34,4 @@ define('PAINEL_API_SECRET', $_ENV['PAINEL_API_SECRET'] ?? '');
 define('SESSION_LIFETIME', 28800); // 8 horas
 
 // Setup key
-define('SETUP_KEY', $_ENV['SETUP_KEY'] ?? '');
+define('SETUP_KEY', $_ENV['SETUP_KEY'] ?? 'kaixa2026');

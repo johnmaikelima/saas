@@ -1,23 +1,23 @@
 /* ============================================
-   PDV Pro SaaS - Tema Escuro Moderno
+   Kaixa SaaS - Tema Claro Moderno
    ============================================ */
 
 :root {
-    --pdv-bg: #0f1117;
-    --pdv-surface: #1a1d27;
-    --pdv-card: #222639;
-    --pdv-border: #2e3348;
+    --pdv-bg: #f0f2f5;
+    --pdv-surface: #ffffff;
+    --pdv-card: #f8f9fa;
+    --pdv-border: #dee2e6;
     --pdv-accent: #6c5ce7;
-    --pdv-accent-hover: #7c6ff7;
-    --pdv-green: #00e676;
-    --pdv-green-soft: #00c853;
-    --pdv-red: #ff5252;
-    --pdv-yellow: #ffd740;
-    --pdv-blue: #448aff;
-    --pdv-cyan: #18ffff;
-    --pdv-text: #eef0f6;
-    --pdv-text-muted: #8a8fa8;
-    --pdv-text-dim: #5c6178;
+    --pdv-accent-hover: #5a4bd6;
+    --pdv-green: #28a745;
+    --pdv-green-soft: #218838;
+    --pdv-red: #dc3545;
+    --pdv-yellow: #ffc107;
+    --pdv-blue: #007bff;
+    --pdv-cyan: #17a2b8;
+    --pdv-text: #212529;
+    --pdv-text-muted: #6c757d;
+    --pdv-text-dim: #adb5bd;
 }
 
 .pdv-body {
@@ -38,6 +38,7 @@
     padding: 10px 20px;
     border-bottom: 1px solid var(--pdv-border);
     flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .pdv-header strong {
@@ -89,14 +90,14 @@
 }
 
 .pdv-search .input-group-text {
-    background: var(--pdv-card);
+    background: var(--pdv-surface);
     border-color: var(--pdv-border);
     color: var(--pdv-accent);
     font-size: 1.1rem;
 }
 
 .pdv-search .form-control {
-    background: var(--pdv-card);
+    background: var(--pdv-surface);
     border-color: var(--pdv-border);
     color: var(--pdv-text);
     font-size: 1.05rem;
@@ -108,7 +109,7 @@
 }
 
 .pdv-search .form-control:focus {
-    background: var(--pdv-card);
+    background: var(--pdv-surface);
     border-color: var(--pdv-accent);
     color: var(--pdv-text);
     box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
@@ -129,14 +130,14 @@
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--pdv-card);
+    background: var(--pdv-surface);
     border: 1px solid var(--pdv-border);
     border-top: none;
     border-radius: 0 0 10px 10px;
     max-height: 320px;
     overflow-y: auto;
     z-index: 1000;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .pdv-search-result-item {
@@ -155,7 +156,7 @@
 
 .pdv-search-result-item:hover,
 .pdv-search-result-item.active {
-    background: rgba(108, 92, 231, 0.15);
+    background: rgba(108, 92, 231, 0.08);
 }
 
 .pdv-search-result-item .produto-nome {
@@ -220,7 +221,7 @@
 }
 
 .pdv-items-container .table tbody tr:hover {
-    background: rgba(108, 92, 231, 0.08);
+    background: rgba(108, 92, 231, 0.05);
 }
 
 .pdv-items-container .table .text-muted {
@@ -243,7 +244,7 @@
 .pdv-total-box {
     text-align: center;
     padding: 20px 15px;
-    background: linear-gradient(135deg, var(--pdv-card) 0%, rgba(108, 92, 231, 0.15) 100%);
+    background: linear-gradient(135deg, #f8f9fa 0%, rgba(108, 92, 231, 0.08) 100%);
     border-radius: 12px;
     border: 1px solid var(--pdv-border);
 }
@@ -260,7 +261,6 @@
     font-weight: 800;
     color: var(--pdv-green);
     line-height: 1.2;
-    text-shadow: 0 0 30px rgba(0, 230, 118, 0.2);
 }
 
 /* ---- Secoes sidebar ---- */
@@ -310,22 +310,22 @@
 
 .pdv-shortcuts .btn-outline-success:hover {
     background: var(--pdv-green);
-    color: var(--pdv-bg);
+    color: #fff;
 }
 
 .pdv-shortcuts .btn-outline-warning {
-    color: var(--pdv-yellow);
-    border-color: rgba(255, 215, 64, 0.4);
+    color: #d39e00;
+    border-color: rgba(255, 193, 7, 0.6);
 }
 
 .pdv-shortcuts .btn-outline-warning:hover {
     background: var(--pdv-yellow);
-    color: var(--pdv-bg);
+    color: #212529;
 }
 
 .pdv-shortcuts .btn-outline-info {
     color: var(--pdv-blue);
-    border-color: rgba(68, 138, 255, 0.4);
+    border-color: rgba(0, 123, 255, 0.4);
 }
 
 .pdv-shortcuts .btn-outline-info:hover {
@@ -378,7 +378,7 @@
 }
 
 .qtd-control .qtd-value:hover {
-    background: rgba(108, 92, 231, 0.2);
+    background: rgba(108, 92, 231, 0.1);
 }
 
 /* ---- Remover item ---- */
@@ -395,7 +395,7 @@
 }
 
 .btn-remove-item:hover {
-    background: rgba(255, 82, 82, 0.15);
+    background: rgba(220, 53, 69, 0.1);
     color: var(--pdv-red);
     opacity: 1;
 }
@@ -427,71 +427,72 @@
     background: var(--pdv-text-dim);
 }
 
-/* ---- Modais dark ---- */
-.modal-content.bg-dark {
+/* ---- Modais ---- */
+.modal-content.pdv-modal {
     background: var(--pdv-surface) !important;
     border: 1px solid var(--pdv-border);
     border-radius: 14px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
-.modal-content.bg-dark .modal-header {
+.modal-content.pdv-modal .modal-header {
     border-color: var(--pdv-border);
 }
 
-.modal-content.bg-dark .modal-footer {
+.modal-content.pdv-modal .modal-footer {
     border-color: var(--pdv-border);
 }
 
-.modal-content.bg-dark .modal-title {
+.modal-content.pdv-modal .modal-title {
     color: var(--pdv-text);
     font-weight: 600;
 }
 
-.modal-content.bg-dark .form-control,
-.modal-content.bg-dark .form-select {
+.modal-content.pdv-modal .form-control,
+.modal-content.pdv-modal .form-select {
     background: var(--pdv-card) !important;
     border-color: var(--pdv-border) !important;
     color: var(--pdv-text) !important;
 }
 
-.modal-content.bg-dark .form-control:focus,
-.modal-content.bg-dark .form-select:focus {
+.modal-content.pdv-modal .form-control:focus,
+.modal-content.pdv-modal .form-select:focus {
     border-color: var(--pdv-accent) !important;
     box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
 }
 
-.modal-content.bg-dark .form-control::placeholder {
+.modal-content.pdv-modal .form-control::placeholder {
     color: var(--pdv-text-dim) !important;
 }
 
-.modal-content.bg-dark .text-success {
+.modal-content.pdv-modal .text-success {
     color: var(--pdv-green) !important;
 }
 
-.modal-content.bg-dark .text-warning {
-    color: var(--pdv-yellow) !important;
+.modal-content.pdv-modal .text-warning {
+    color: #d39e00 !important;
 }
 
-.modal-content.bg-dark .text-info {
+.modal-content.pdv-modal .text-info {
     color: var(--pdv-cyan) !important;
 }
 
-.modal-content.bg-dark .text-muted {
+.modal-content.pdv-modal .text-muted {
     color: var(--pdv-text-muted) !important;
 }
 
-.modal-content.bg-dark .table-dark {
+.modal-content.pdv-modal .table {
     --bs-table-bg: transparent;
     --bs-table-color: var(--pdv-text);
     --bs-table-border-color: var(--pdv-border);
-}
-
-.modal-content.bg-dark .table-dark td {
     color: var(--pdv-text);
 }
 
-.modal-content.bg-dark kbd {
+.modal-content.pdv-modal .table td {
+    color: var(--pdv-text);
+}
+
+.modal-content.pdv-modal kbd {
     background: var(--pdv-accent);
     color: #fff;
     font-size: 0.8rem;
@@ -500,71 +501,71 @@
 }
 
 /* Modal pagamento - botoes */
-.modal-content.bg-dark .btn-outline-success {
+.modal-content.pdv-modal .btn-outline-success {
     color: var(--pdv-green);
-    border-color: rgba(0, 230, 118, 0.4);
+    border-color: rgba(40, 167, 69, 0.4);
 }
 
-.modal-content.bg-dark .btn-outline-success:hover {
+.modal-content.pdv-modal .btn-outline-success:hover {
     background: var(--pdv-green);
-    color: var(--pdv-bg);
+    color: #fff;
     border-color: var(--pdv-green);
 }
 
-.modal-content.bg-dark .btn-outline-primary {
+.modal-content.pdv-modal .btn-outline-primary {
     color: var(--pdv-accent);
     border-color: rgba(108, 92, 231, 0.4);
 }
 
-.modal-content.bg-dark .btn-outline-primary:hover {
+.modal-content.pdv-modal .btn-outline-primary:hover {
     background: var(--pdv-accent);
     color: #fff;
 }
 
-.modal-content.bg-dark .btn-outline-info {
+.modal-content.pdv-modal .btn-outline-info {
     color: var(--pdv-blue);
-    border-color: rgba(68, 138, 255, 0.4);
+    border-color: rgba(0, 123, 255, 0.4);
 }
 
-.modal-content.bg-dark .btn-outline-info:hover {
+.modal-content.pdv-modal .btn-outline-info:hover {
     background: var(--pdv-blue);
     color: #fff;
 }
 
-.modal-content.bg-dark .btn-outline-warning {
-    color: var(--pdv-yellow);
-    border-color: rgba(255, 215, 64, 0.4);
+.modal-content.pdv-modal .btn-outline-warning {
+    color: #d39e00;
+    border-color: rgba(255, 193, 7, 0.4);
 }
 
-.modal-content.bg-dark .btn-outline-warning:hover {
+.modal-content.pdv-modal .btn-outline-warning:hover {
     background: var(--pdv-yellow);
-    color: var(--pdv-bg);
+    color: #212529;
 }
 
-.modal-content.bg-dark .btn-success {
+.modal-content.pdv-modal .btn-success {
     background: var(--pdv-green);
     border-color: var(--pdv-green);
-    color: var(--pdv-bg);
+    color: #fff;
     font-weight: 600;
 }
 
-.modal-content.bg-dark .btn-success:hover {
+.modal-content.pdv-modal .btn-success:hover {
     background: var(--pdv-green-soft);
     border-color: var(--pdv-green-soft);
 }
 
-.modal-content.bg-dark .btn-secondary {
+.modal-content.pdv-modal .btn-secondary {
     background: var(--pdv-card);
     border-color: var(--pdv-border);
     color: var(--pdv-text-muted);
 }
 
-.modal-content.bg-dark .card.bg-secondary {
+.modal-content.pdv-modal .card.bg-secondary {
     background: var(--pdv-card) !important;
     border: 1px solid var(--pdv-border);
 }
 
-.modal-content.bg-dark .form-check-label {
+.modal-content.pdv-modal .form-check-label {
     color: var(--pdv-text);
 }
 
@@ -595,7 +596,7 @@
 
 /* ---- Animacao item adicionado ---- */
 @keyframes itemAdded {
-    0% { background: rgba(0, 230, 118, 0.2); }
+    0% { background: rgba(40, 167, 69, 0.15); }
     100% { background: transparent; }
 }
 
@@ -612,7 +613,7 @@
     color: var(--pdv-text-dim);
 }
 
-/* ---- Classe utilitaria dark inputs ---- */
+/* ---- Classe utilitaria inputs ---- */
 .form-control-dark {
     background: var(--pdv-card) !important;
     border-color: var(--pdv-border) !important;

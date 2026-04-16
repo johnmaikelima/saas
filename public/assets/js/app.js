@@ -1,5 +1,5 @@
 /**
- * PDV Pro SaaS - JavaScript Global
+ * Kaixa SaaS - JavaScript Global
  */
 
 // Mascaras

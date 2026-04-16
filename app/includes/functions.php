@@ -1,6 +1,6 @@
 <?php
 /**
- * Funções helpers globais - SaaS PDV Pro
+ * Funções helpers globais - SaaS Kaixa
  * Todas as funções que acessam dados DEVEM usar tenantQuery/tenantInsert/tenantUpdate/tenantDelete
  */
 

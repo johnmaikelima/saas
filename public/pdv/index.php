@@ -148,10 +148,10 @@ $empresa = getEmpresa();
     <!-- Modal Pagamento -->
     <div class="modal fade" id="modalPagamento" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content bg-dark text-light">
-                <div class="modal-header border-secondary">
+            <div class="modal-content pdv-modal">
+                <div class="modal-header">
                     <h5 class="modal-title"><i class="fas fa-credit-card me-2"></i>Pagamento</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -221,7 +221,7 @@ $empresa = getEmpresa();
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-secondary">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-success btn-lg" onclick="finalizarVenda()" id="btnConfirmarVenda">
                         <i class="fas fa-check me-2"></i>Confirmar Venda
@@ -234,13 +234,13 @@ $empresa = getEmpresa();
     <!-- Modal Ajuda -->
     <div class="modal fade" id="modalAjuda" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-light">
-                <div class="modal-header border-secondary">
+            <div class="modal-content pdv-modal">
+                <div class="modal-header">
                     <h5 class="modal-title"><i class="fas fa-keyboard me-2"></i>Atalhos de Teclado</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-dark table-sm">
+                    <table class="table table-sm">
                         <tr><td><kbd>F1</kbd></td><td>Ajuda</td></tr>
                         <tr><td><kbd>F2</kbd></td><td>Buscar Produto</td></tr>
                         <tr><td><kbd>F4</kbd></td><td>Desconto</td></tr>
@@ -258,17 +258,17 @@ $empresa = getEmpresa();
     <!-- Modal Quantidade -->
     <div class="modal fade" id="modalQtd" tabindex="-1">
         <div class="modal-dialog modal-sm modal-dialog-centered">
-            <div class="modal-content bg-dark text-light">
-                <div class="modal-header border-secondary">
+            <div class="modal-content pdv-modal">
+                <div class="modal-header">
                     <h5 class="modal-title">Quantidade</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <input type="number" class="form-control form-control-lg form-control-dark text-center"
                            id="inputQtdModal" min="0.001" step="0.001" value="1">
                     <input type="hidden" id="qtdItemIndex">
                 </div>
-                <div class="modal-footer border-secondary">
+                <div class="modal-footer">
                     <button class="btn btn-primary" onclick="confirmarQtd()">OK</button>
                 </div>
             </div>
