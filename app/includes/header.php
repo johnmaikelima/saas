@@ -3,6 +3,7 @@ $pageTitle = $pageTitle ?? APP_NAME;
 $user = usuario();
 $empresa = getEmpresa();
 $nomeLoja = getConfig('nome_loja', $empresa['nome_fantasia'] ?? APP_NAME);
+$logoNavbar = !empty($empresa['logo']) ? baseUrl('uploads/' . $empresa['logo']) : '';
 $caixaAberto = $user ? getCaixaAberto() : null;
 ?>
 <!DOCTYPE html>
@@ -23,8 +24,12 @@ $caixaAberto = $user ? getCaixaAberto() : null;
 <?php if ($user): ?>
 <nav class="navbar navbar-expand-lg shadow-sm">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="<?= baseUrl('dashboard/') ?>">
-            <i class="fas fa-cash-register me-2"></i><?= e($nomeLoja) ?>
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="<?= baseUrl('dashboard/') ?>">
+            <?php if ($logoNavbar): ?>
+                <img src="<?= e($logoNavbar) ?>" alt="<?= e($nomeLoja) ?>" class="navbar-logo">
+            <?php else: ?>
+                <i class="fas fa-cash-register me-2"></i><?= e($nomeLoja) ?>
+            <?php endif; ?>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
             <span class="navbar-toggler-icon"></span>
@@ -64,6 +69,11 @@ $caixaAberto = $user ? getCaixaAberto() : null;
                 <li class="nav-item">
                     <a class="nav-link" href="<?= baseUrl('vendas/') ?>">
                         <i class="fas fa-receipt me-1"></i>Vendas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= baseUrl('orcamentos/') ?>">
+                        <i class="fas fa-file-signature me-1"></i>Orçamentos
                     </a>
                 </li>
                 <li class="nav-item dropdown">

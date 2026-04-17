@@ -42,6 +42,20 @@ $stmt = $pdo->prepare("SELECT * FROM produtos WHERE tenant_id = ? AND ativo = 1 
 $stmt->execute([$tid]);
 $estoqueBaixo = $stmt->fetchAll();
 
+// Orcamentos - ultimos 30 dias
+$orc30Ini = date('Y-m-d', strtotime('-30 days'));
+$stmt = $pdo->prepare("SELECT status, COUNT(*) qtd, COALESCE(SUM(total),0) total
+    FROM orcamentos WHERE tenant_id = ? AND data_orcamento >= ? GROUP BY status");
+$stmt->execute([$tid, $orc30Ini]);
+$orcResumo = ['pendente'=>['qtd'=>0,'total'=>0],'aprovado'=>['qtd'=>0,'total'=>0],
+              'convertido'=>['qtd'=>0,'total'=>0],'recusado'=>['qtd'=>0,'total'=>0],
+              'expirado'=>['qtd'=>0,'total'=>0]];
+foreach ($stmt->fetchAll() as $r) {
+    if (isset($orcResumo[$r['status']])) $orcResumo[$r['status']] = ['qtd'=>(int)$r['qtd'],'total'=>(float)$r['total']];
+}
+$orcTotalQtd = array_sum(array_column($orcResumo, 'qtd'));
+$orcTaxaConv = $orcTotalQtd > 0 ? ($orcResumo['convertido']['qtd'] / $orcTotalQtd * 100) : 0;
+
 $caixaAberto = getCaixaAberto();
 
 require __DIR__ . '/../../app/includes/header.php';
@@ -145,6 +159,44 @@ require __DIR__ . '/../../app/includes/header.php';
                     <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-file-signature me-2"></i>Orçamentos (últimos 30 dias)</span>
+        <a href="<?= baseUrl('orcamentos/') ?>" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-list me-1"></i>Ver todos
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="row text-center g-2">
+            <div class="col">
+                <div class="small text-muted">Pendentes</div>
+                <div class="fs-5 fw-bold text-warning"><?= $orcResumo['pendente']['qtd'] ?></div>
+            </div>
+            <div class="col">
+                <div class="small text-muted">Aprovados</div>
+                <div class="fs-5 fw-bold text-info"><?= $orcResumo['aprovado']['qtd'] ?></div>
+            </div>
+            <div class="col">
+                <div class="small text-muted">Convertidos</div>
+                <div class="fs-5 fw-bold text-success"><?= $orcResumo['convertido']['qtd'] ?></div>
+            </div>
+            <div class="col">
+                <div class="small text-muted">Recusados</div>
+                <div class="fs-5 fw-bold text-danger"><?= $orcResumo['recusado']['qtd'] ?></div>
+            </div>
+            <div class="col">
+                <div class="small text-muted">Expirados</div>
+                <div class="fs-5 fw-bold text-secondary"><?= $orcResumo['expirado']['qtd'] ?></div>
+            </div>
+            <div class="col border-start">
+                <div class="small text-muted">Taxa de Conversão</div>
+                <div class="fs-4 fw-bold text-primary"><?= number_format($orcTaxaConv, 1, ',', '.') ?>%</div>
+                <div class="small text-muted"><?= $orcResumo['convertido']['qtd'] ?> de <?= $orcTotalQtd ?></div>
             </div>
         </div>
     </div>

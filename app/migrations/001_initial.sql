@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS configuracoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tenant_id INT NOT NULL,
     chave VARCHAR(100) NOT NULL,
-    valor TEXT DEFAULT '',
+    valor TEXT,
     grupo VARCHAR(50) DEFAULT 'sistema',
     UNIQUE KEY uk_tenant_chave (tenant_id, chave),
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE

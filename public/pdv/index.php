@@ -156,16 +156,19 @@ $nfceAmbiente = (int) getConfig('nfce_ambiente', '2');
 
     <!-- Modal Pagamento -->
     <div class="modal fade" id="modalPagamento" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content pdv-modal">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-credit-card me-2"></i>Pagamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content pdv-modal pdv-pagamento-modal">
+                <div class="modal-header py-3">
+                    <h3 class="modal-title mb-0"><i class="fas fa-credit-card me-2"></i>Pagamento</h3>
+                    <button type="button" class="btn-close btn-close-lg" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
+                <div class="modal-body p-4">
+                    <div class="row g-4">
                         <div class="col-md-7">
-                            <h4 class="text-center mb-3">Total: <span class="text-success" id="totalPagar">R$ 0,00</span></h4>
+                            <div class="pdv-total-display text-center mb-4">
+                                <div class="small text-muted text-uppercase fw-semibold">Total a Pagar</div>
+                                <div class="pdv-total-value text-success" id="totalPagar">R$ 0,00</div>
+                            </div>
 
                             <!-- Pagamentos adicionados -->
                             <div id="pagamentosLista" class="mb-3"></div>
@@ -175,7 +178,7 @@ $nfceAmbiente = (int) getConfig('nfce_ambiente', '2');
                                 <div class="card-body p-3">
                                     <div class="row g-2">
                                         <div class="col-5">
-                                            <select class="form-select form-control-dark" id="formaPagamento">
+                                            <select class="form-select form-select-lg form-control-dark" id="formaPagamento">
                                                 <option value="dinheiro">Dinheiro</option>
                                                 <option value="pix">PIX</option>
                                                 <option value="debito">Cartão Débito</option>
@@ -183,11 +186,11 @@ $nfceAmbiente = (int) getConfig('nfce_ambiente', '2');
                                             </select>
                                         </div>
                                         <div class="col-4">
-                                            <input type="number" class="form-control form-control-dark"
+                                            <input type="number" class="form-control form-control-lg form-control-dark"
                                                    id="valorPagamento" placeholder="Valor" step="0.01" min="0">
                                         </div>
                                         <div class="col-3">
-                                            <button class="btn btn-primary w-100" onclick="adicionarPagamento()">
+                                            <button class="btn btn-primary btn-lg w-100" onclick="adicionarPagamento()">
                                                 <i class="fas fa-plus"></i> Add
                                             </button>
                                         </div>
@@ -196,63 +199,73 @@ $nfceAmbiente = (int) getConfig('nfce_ambiente', '2');
                             </div>
 
                             <!-- Resumo -->
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>Total Pago:</span>
-                                <span class="fw-bold" id="totalPago">R$ 0,00</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>Restante:</span>
-                                <span class="fw-bold text-warning" id="restantePagar">R$ 0,00</span>
-                            </div>
-                            <div class="d-flex justify-content-between" id="trocoLine" style="display:none!important">
-                                <span>Troco:</span>
-                                <span class="fw-bold text-info" id="trocoValor">R$ 0,00</span>
+                            <div class="pdv-resumo">
+                                <div class="d-flex justify-content-between">
+                                    <span>Total Pago:</span>
+                                    <span class="fw-bold" id="totalPago">R$ 0,00</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Restante:</span>
+                                    <span class="fw-bold text-warning" id="restantePagar">R$ 0,00</span>
+                                </div>
+                                <div class="d-flex justify-content-between" id="trocoLine" hidden>
+                                    <span>Troco:</span>
+                                    <span class="fw-bold text-info" id="trocoValor">R$ 0,00</span>
+                                </div>
                             </div>
                         </div>
 
                         <div class="col-md-5">
                             <!-- Atalhos rapidos -->
-                            <h6 class="text-muted">Pagamento rápido:</h6>
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-outline-success" onclick="pagamentoRapido('dinheiro')">
+                            <h5 class="text-muted mb-3"><i class="fas fa-bolt me-1"></i>Pagamento rápido</h5>
+                            <div class="d-grid gap-2 pdv-rapido-btns">
+                                <button class="btn btn-outline-success btn-lg" onclick="pagamentoRapido('dinheiro')">
                                     <i class="fas fa-money-bill me-2"></i>Dinheiro (total)
                                 </button>
-                                <button class="btn btn-outline-primary" onclick="pagamentoRapido('pix')">
+                                <button class="btn btn-outline-primary btn-lg" onclick="pagamentoRapido('pix')">
                                     <i class="fas fa-qrcode me-2"></i>PIX (total)
                                 </button>
-                                <button class="btn btn-outline-info" onclick="pagamentoRapido('debito')">
+                                <button class="btn btn-outline-info btn-lg" onclick="pagamentoRapido('debito')">
                                     <i class="fas fa-credit-card me-2"></i>Débito (total)
                                 </button>
-                                <button class="btn btn-outline-warning" onclick="pagamentoRapido('credito')">
+                                <button class="btn btn-outline-warning btn-lg" onclick="pagamentoRapido('credito')">
                                     <i class="fas fa-credit-card me-2"></i>Crédito (total)
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <div>
+                <div class="modal-footer flex-column align-items-stretch p-4">
+                    <?php if ($nfceConfigurado && $nfceAmbiente === 2): ?>
+                        <div class="text-center mb-2">
+                            <span class="badge bg-warning text-dark fs-6"><i class="fas fa-flask me-1"></i>NFC-e em Homologação</span>
+                        </div>
+                    <?php endif; ?>
+                    <div class="row g-2">
                         <?php if ($nfceConfigurado): ?>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="emitirNfce" checked>
-                            <label class="form-check-label" for="emitirNfce">
-                                <i class="fas fa-file-invoice me-1"></i>Emitir NFC-e
-                                <?php if ($nfceAmbiente === 2): ?>
-                                    <span class="badge bg-warning text-dark ms-1">Homologação</span>
-                                <?php endif; ?>
-                            </label>
+                        <div class="col-md-7">
+                            <button type="button" class="btn btn-success pdv-btn-finalizar w-100" onclick="finalizarVenda(true)" id="btnFinalizarComNfce">
+                                <i class="fas fa-file-invoice me-2"></i>Finalizar + NFC-e
+                            </button>
+                        </div>
+                        <div class="col-md-5">
+                            <button type="button" class="btn btn-outline-secondary pdv-btn-finalizar w-100" onclick="finalizarVenda(false)" id="btnFinalizarSemNota">
+                                <i class="fas fa-check me-2"></i>Sem Nota
+                            </button>
                         </div>
                         <?php else: ?>
-                        <small class="text-muted">
-                            <i class="fas fa-info-circle me-1"></i>NFC-e não configurada
-                        </small>
+                        <div class="col-12">
+                            <button type="button" class="btn btn-success pdv-btn-finalizar w-100" onclick="finalizarVenda(false)" id="btnFinalizarSemNota">
+                                <i class="fas fa-check me-2"></i>Finalizar Venda (sem NFC-e)
+                            </button>
+                            <div class="text-center mt-2">
+                                <small class="text-muted"><i class="fas fa-info-circle me-1"></i>NFC-e não configurada</small>
+                            </div>
+                        </div>
                         <?php endif; ?>
-                    </div>
-                    <div>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-success btn-lg" onclick="finalizarVenda()" id="btnConfirmarVenda">
-                            <i class="fas fa-check me-2"></i>Confirmar Venda
-                        </button>
+                        <div class="col-12 text-end">
+                            <button type="button" class="btn btn-link text-muted" data-bs-dismiss="modal">Cancelar (ESC)</button>
+                        </div>
                     </div>
                 </div>
             </div>

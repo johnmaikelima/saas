@@ -24,6 +24,7 @@ main { flex: 1; }
     letter-spacing: 0.5px;
 }
 .navbar-brand:hover { color: rgba(255,255,255,0.9) !important; }
+.navbar-logo { max-height: 38px; max-width: 160px; object-fit: contain; background: #fff; padding: 3px 8px; border-radius: 6px; }
 .navbar .nav-link {
     font-size: 0.9rem;
     padding: 0.5rem 0.75rem !important;

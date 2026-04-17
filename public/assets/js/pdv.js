@@ -290,7 +290,8 @@ function abrirPagamento() {
 function pagamentoRapido(forma) {
     pagamentos = [{ forma: forma, valor: getTotal() }];
     renderPagamentos();
-    finalizarVenda();
+    const nfceOk = document.getElementById('nfceConfigurado').value === '1';
+    finalizarVenda(nfceOk);
 }
 
 // Adicionar pagamento
@@ -333,19 +334,19 @@ function renderPagamentos() {
     document.getElementById('restantePagar').textContent = formatMoney(restante);
 
     const trocoLine = document.getElementById('trocoLine');
-    if (troco > 0) {
-        trocoLine.style.display = 'flex';
-        document.getElementById('trocoValor').textContent = formatMoney(troco);
-    } else {
-        trocoLine.style.display = 'none';
-    }
+    document.getElementById('trocoValor').textContent = formatMoney(troco);
+    trocoLine.hidden = troco <= 0;
 
-    // Habilitar/desabilitar botao confirmar
-    document.getElementById('btnConfirmarVenda').disabled = pago < total - 0.01;
+    // Habilitar/desabilitar botoes de finalizacao
+    const disabled = pago < total - 0.01;
+    const btnNfce = document.getElementById('btnFinalizarComNfce');
+    const btnSem  = document.getElementById('btnFinalizarSemNota');
+    if (btnNfce) btnNfce.disabled = disabled;
+    if (btnSem)  btnSem.disabled  = disabled;
 }
 
 // Finalizar venda
-function finalizarVenda() {
+function finalizarVenda(emitirNfce = false) {
     const total = getTotal();
     const pago = pagamentos.reduce((s, p) => s + p.valor, 0);
 
@@ -359,13 +360,18 @@ function finalizarVenda() {
         return;
     }
 
-    const btn = document.getElementById('btnConfirmarVenda');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
-
-    // Verificar se deve emitir NFC-e
-    const emitirNfceCheckbox = document.getElementById('emitirNfce');
-    const emitirNfce = emitirNfceCheckbox ? emitirNfceCheckbox.checked : false;
+    const btnNfce  = document.getElementById('btnFinalizarComNfce');
+    const btnSem   = document.getElementById('btnFinalizarSemNota');
+    const btn = emitirNfce ? btnNfce : btnSem;
+    const btnHtmlOriginal = {
+        nfce: btnNfce ? btnNfce.innerHTML : null,
+        sem:  btnSem  ? btnSem.innerHTML  : null,
+    };
+    if (btnNfce) btnNfce.disabled = true;
+    if (btnSem)  btnSem.disabled  = true;
+    btn.innerHTML = emitirNfce
+        ? '<i class="fas fa-spinner fa-spin me-2"></i>Emitindo NFC-e...'
+        : '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
 
     const data = {
         itens: itens,
@@ -376,10 +382,6 @@ function finalizarVenda() {
         caixa_id: CAIXA_ID,
         emitir_nfce: emitirNfce,
     };
-
-    if (emitirNfce) {
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Emitindo NFC-e...';
-    }
 
     fetch(`${BASE_URL}/pdv/finalizar.php`, {
         method: 'POST',
@@ -410,14 +412,14 @@ function finalizarVenda() {
             novaVenda();
         } else {
             alert('Erro: ' + result.msg);
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check me-2"></i>Confirmar Venda';
+            if (btnNfce) { btnNfce.disabled = false; btnNfce.innerHTML = btnHtmlOriginal.nfce; }
+            if (btnSem)  { btnSem.disabled  = false; btnSem.innerHTML  = btnHtmlOriginal.sem; }
         }
     })
     .catch(err => {
         alert('Erro de conexao: ' + err.message);
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check me-2"></i>Confirmar Venda';
+        if (btnNfce) { btnNfce.disabled = false; btnNfce.innerHTML = btnHtmlOriginal.nfce; }
+        if (btnSem)  { btnSem.disabled  = false; btnSem.innerHTML  = btnHtmlOriginal.sem; }
     });
 }
 
