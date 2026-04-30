@@ -1,6 +1,6 @@
 {
-    "name": "kaixa/saas",
-    "description": "Kaixa SaaS - Sistema de vendas e emissao NFC-e",
+    "name": "balcao-pdv/saas",
+    "description": "Balcão PDV - Sistema de vendas e emissão NFC-e",
     "type": "project",
     "require": {
         "php": ">=8.1",

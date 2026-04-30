@@ -247,7 +247,7 @@ class NfceHelper
         $std->indPres = 1;
         $std->indIntermed = 0;
         $std->procEmi = 0;
-        $std->verProc = 'Kaixa SaaS 1.0';
+        $std->verProc = 'Balcão PDV 1.0';
         $nfe->tagide($std);
 
         // Emitente

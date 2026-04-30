@@ -168,7 +168,7 @@ require __DIR__ . '/../../app/includes/header.php';
                     <?= csrfField() ?>
                     <input type="hidden" name="secao" value="sistema">
                     <div class="row g-3">
-                        <div class="col-md-4"><label class="form-label">Nome da Loja</label><input type="text" class="form-control" name="nome_loja" value="<?= e(getConfig('nome_loja', $empresa['nome_fantasia'] ?? 'Kaixa')) ?>"></div>
+                        <div class="col-md-4"><label class="form-label">Nome da Loja</label><input type="text" class="form-control" name="nome_loja" value="<?= e(getConfig('nome_loja', $empresa['nome_fantasia'] ?? 'Balcão PDV')) ?>"></div>
                         <div class="col-md-2"><label class="form-label">Casas Decimais Qtd</label><input type="number" class="form-control" name="casas_decimais_qtd" value="<?= e(getConfig('casas_decimais_qtd', '2')) ?>" min="0" max="4"></div>
                         <div class="col-12">
                             <div class="form-check form-switch mb-2">

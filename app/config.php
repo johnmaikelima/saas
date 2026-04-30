@@ -18,7 +18,7 @@ define('DB_USER', $_ENV['DB_USER'] ?? 'root');
 define('DB_PASS', $_ENV['DB_PASS'] ?? '');
 
 // Aplicação
-define('APP_NAME', 'Kaixa');
+define('APP_NAME', 'Balcão PDV');
 define('APP_VERSION', '1.0.0');
 
 // URL base
