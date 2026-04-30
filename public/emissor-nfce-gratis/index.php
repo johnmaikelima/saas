@@ -42,9 +42,9 @@ if (empty($planos)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Emissor NFC-e grátis para seu negócio. Baixe o Kaixa e emita até 30 notas fiscais por mês sem pagar nada. Sistema completo com PDV, estoque e relatórios.">
+    <meta name="description" content="Emissor NFC-e grátis para seu negócio. Baixe o Balcão PDV e emita até 30 notas fiscais por mês sem pagar nada. Sistema completo com PDV, estoque e relatórios.">
     <meta name="keywords" content="emissor nfce gratis, emissor nfc-e gratis, nfce gratis, nota fiscal consumidor gratis, pdv gratis, sistema pdv gratis">
-    <title>Emissor NFC-e Grátis - Kaixa | Sistema de Vendas Completo</title>
+    <title>Emissor NFC-e Grátis - Balcão PDV | Sistema de Vendas Completo</title>
     <link rel="canonical" href="<?= APP_URL ?>/emissor-nfce-gratis/">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -55,7 +55,7 @@ if (empty($planos)) {
     {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "Kaixa - Emissor NFC-e",
+        "name": "Balcão PDV - Emissor NFC-e",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Windows",
         "offers": {
@@ -318,7 +318,7 @@ if (empty($planos)) {
 <!-- Navbar -->
 <nav class="navbar-landing">
     <div class="container d-flex justify-content-between align-items-center">
-        <a class="navbar-brand-custom" href="/"><i class="fas fa-cash-register"></i> Kaixa</a>
+        <a class="navbar-brand-custom" href="/"><i class="fas fa-cash-register"></i> Balcão PDV</a>
         <div class="d-flex align-items-center gap-3">
             <a href="#precos" class="nav-link-custom d-none d-md-inline">Planos</a>
             <a href="#como-funciona" class="nav-link-custom d-none d-md-inline">Como Funciona</a>
@@ -409,7 +409,7 @@ if (empty($planos)) {
             <div class="col-md-4 animate-on-scroll">
                 <div class="step-card">
                     <div class="step-number">1</div>
-                    <h5>Baixe o Kaixa</h5>
+                    <h5>Baixe o Balcão PDV</h5>
                     <p>Faça o download gratuito e instale no seu computador Windows. Processo rápido e simples.</p>
                 </div>
             </div>
@@ -437,7 +437,7 @@ if (empty($planos)) {
         <div class="text-center mb-5">
             <div class="section-label animate-on-scroll"><i class="fas fa-star"></i> Funcionalidades</div>
             <h2 class="section-title animate-on-scroll">Tudo que você precisa, mesmo no plano grátis</h2>
-            <p class="section-subtitle animate-on-scroll">O Kaixa oferece um sistema completo de vendas, não apenas um emissor de notas fiscais.</p>
+            <p class="section-subtitle animate-on-scroll">O Balcão PDV oferece um sistema completo de vendas, não apenas um emissor de notas fiscais.</p>
         </div>
         <div class="row g-4">
             <div class="col-md-6 col-lg-4 animate-on-scroll">
@@ -560,7 +560,7 @@ if (empty($planos)) {
 
         <div class="text-center mt-4">
             <p class="text-muted">
-                <i class="fas fa-cloud me-1"></i>Prefere acessar de qualquer lugar? Conheça a <a href="/" style="color:var(--primary);font-weight:600;">versão online (SaaS)</a> do Kaixa.
+                <i class="fas fa-cloud me-1"></i>Prefere acessar de qualquer lugar? Conheça a <a href="/" style="color:var(--primary);font-weight:600;">versão online (SaaS)</a> do Balcão PDV.
             </p>
         </div>
     </div>
@@ -585,7 +585,7 @@ if (empty($planos)) {
                 </div>
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">Funciona em qual sistema operacional? <i class="fas fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>O Kaixa Desktop funciona em Windows 10 ou superior. Se você prefere acessar pelo navegador (sem instalar), conheça nossa versão online (SaaS) que funciona em qualquer dispositivo.</p></div>
+                    <div class="faq-answer"><p>O Balcão PDV Desktop funciona em Windows 10 ou superior. Se você prefere acessar pelo navegador (sem instalar), conheça nossa versão online (SaaS) que funciona em qualquer dispositivo.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">E se eu precisar de mais de 30 NFC-e por mês? <i class="fas fa-chevron-down"></i></button>
@@ -609,7 +609,7 @@ if (empty($planos)) {
     <div class="container text-center">
         <h2 class="cta-title animate-on-scroll">Comece a emitir NFC-e grátis agora</h2>
         <p class="cta-text animate-on-scroll">Sem compromisso, sem cartão de crédito. Baixe, instale e comece a usar.</p>
-        <a href="#" class="btn-cta animate-on-scroll"><i class="fas fa-download"></i> Baixar Kaixa Grátis</a>
+        <a href="#" class="btn-cta animate-on-scroll"><i class="fas fa-download"></i> Baixar Balcão PDV Grátis</a>
     </div>
 </section>
 
@@ -618,7 +618,7 @@ if (empty($planos)) {
     <div class="container">
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="footer-brand"><i class="fas fa-cash-register"></i> Kaixa</div>
+                <div class="footer-brand"><i class="fas fa-cash-register"></i> Balcão PDV</div>
                 <p class="footer-desc">Emissor NFC-e grátis e sistema de vendas completo para o seu negócio.</p>
             </div>
             <div class="col-md-2">
@@ -644,7 +644,7 @@ if (empty($planos)) {
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; <?= date('Y') ?> Kaixa. Todos os direitos reservados.</p>
+            <p>&copy; <?= date('Y') ?> Balcão PDV. Todos os direitos reservados.</p>
         </div>
     </div>
 </footer>

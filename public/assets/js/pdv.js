@@ -1,5 +1,5 @@
 /**
- * Kaixa SaaS - Logica do PDV, atalhos e AJAX
+ * Balcão PDV SaaS - Logica do PDV, atalhos e AJAX
  */
 
 const BASE_URL = document.getElementById('baseUrl').value;

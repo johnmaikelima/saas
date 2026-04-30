@@ -1,5 +1,5 @@
 /**
- * Kaixa SaaS - JavaScript Global
+ * Balcão PDV SaaS - JavaScript Global
  */
 
 // Mascaras

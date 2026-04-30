@@ -1,6 +1,6 @@
 <?php
 /**
- * Bootstrap do SaaS Kaixa - Multi-tenant com segurança
+ * Bootstrap do SaaS Balcão PDV - Multi-tenant com segurança
  */
 
 require_once __DIR__ . '/config.php';

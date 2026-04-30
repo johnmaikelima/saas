@@ -1,4 +1,4 @@
--- Migration 001: Tabelas do SaaS Kaixa (Multi-tenant MySQL)
+-- Migration 001: Tabelas do SaaS Balcão PDV (Multi-tenant MySQL)
 
 -- Tenants (empresas)
 CREATE TABLE IF NOT EXISTS tenants (

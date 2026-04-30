@@ -50,8 +50,8 @@ function slugCurto(string $slug): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Kaixa - Sistema de vendas completo para o seu negócio. PDV, estoque, clientes, relatórios e muito mais. 100% online.">
-    <title>Kaixa - Sistema de Vendas Completo</title>
+    <meta name="description" content="Balcão PDV - Sistema de vendas completo para o seu negócio. PDV, estoque, clientes, relatórios e muito mais. 100% online.">
+    <title>Balcão PDV - Sistema de Vendas Completo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -722,7 +722,7 @@ function slugCurto(string $slug): string {
         <div class="d-flex justify-content-between align-items-center">
             <a href="#" class="navbar-brand-custom">
                 <i class="fas fa-bolt"></i>
-                Kaixa
+                Balcão PDV
             </a>
 
             <button class="navbar-toggler-custom d-lg-none" onclick="document.getElementById('navMenu').classList.toggle('show')" aria-label="Menu">
@@ -762,7 +762,7 @@ function slugCurto(string $slug): string {
                     Novo - Agora 100% na nuvem
                 </div>
                 <h1 class="hero-title">
-                    Kaixa<br>
+                    Balcão PDV<br>
                     <span class="gradient-text">Sistema de vendas completo</span>
                 </h1>
                 <p class="hero-subtitle">
@@ -949,13 +949,13 @@ function slugCurto(string $slug): string {
         <div class="text-center mb-5">
             <div class="section-label animate-on-scroll"><i class="fas fa-circle-question"></i> Dúvidas Frequentes</div>
             <h2 class="section-title animate-on-scroll">Perguntas Frequentes</h2>
-            <p class="section-subtitle animate-on-scroll">Tire suas dúvidas sobre o Kaixa e descubra como podemos ajudar o seu negócio.</p>
+            <p class="section-subtitle animate-on-scroll">Tire suas dúvidas sobre o Balcão PDV e descubra como podemos ajudar o seu negócio.</p>
         </div>
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">Preciso instalar algum programa? <i class="fas fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>Não! O Kaixa é 100% online. Basta acessar pelo navegador do seu computador, tablet ou celular. Não é necessário instalar nenhum programa ou aplicativo.</p></div>
+                    <div class="faq-answer"><p>Não! O Balcão PDV é 100% online. Basta acessar pelo navegador do seu computador, tablet ou celular. Não é necessário instalar nenhum programa ou aplicativo.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">Posso testar gratuitamente? <i class="fas fa-chevron-down"></i></button>
@@ -979,7 +979,7 @@ function slugCurto(string $slug): string {
                 </div>
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">Emite nota fiscal? <i class="fas fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>O Kaixa é um sistema de gestão de vendas e controle interno. A emissão de notas fiscais pode ser integrada com soluções parceiras. Entre em contato para mais informações sobre integrações disponíveis.</p></div>
+                    <div class="faq-answer"><p>O Balcão PDV é um sistema de gestão de vendas e controle interno. A emissão de notas fiscais pode ser integrada com soluções parceiras. Entre em contato para mais informações sobre integrações disponíveis.</p></div>
                 </div>
             </div>
         </div>
@@ -990,7 +990,7 @@ function slugCurto(string $slug): string {
 <section class="cta-section">
     <div class="container text-center">
         <h2 class="cta-title animate-on-scroll">Pronto para transformar suas vendas?</h2>
-        <p class="cta-text animate-on-scroll">Junte-se a centenas de negócios que já usam o Kaixa.<br>Teste grátis por 15 dias. Crie sua conta em menos de 2 minutos.</p>
+        <p class="cta-text animate-on-scroll">Junte-se a centenas de negócios que já usam o Balcão PDV.<br>Teste grátis por 15 dias. Crie sua conta em menos de 2 minutos.</p>
         <a href="/auth/register.php?plano=starter" class="btn-cta animate-on-scroll"><i class="fas fa-rocket"></i> Teste 15 Dias Grátis</a>
     </div>
 </section>
@@ -1000,7 +1000,7 @@ function slugCurto(string $slug): string {
     <div class="container">
         <div class="row g-4">
             <div class="col-lg-4">
-                <div class="footer-brand"><i class="fas fa-bolt"></i> Kaixa</div>
+                <div class="footer-brand"><i class="fas fa-bolt"></i> Balcão PDV</div>
                 <p class="footer-desc">Sistema de vendas completo para o seu negócio. Simples, rápido e 100% online.</p>
             </div>
             <div class="col-6 col-lg-2">
@@ -1033,7 +1033,7 @@ function slugCurto(string $slug): string {
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">&copy; 2026 Kaixa. Todos os direitos reservados.</div>
+        <div class="footer-bottom">&copy; 2026 Balcão PDV. Todos os direitos reservados.</div>
     </div>
 </footer>
 

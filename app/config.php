@@ -1,6 +1,6 @@
 <?php
 /**
- * Configurações globais do SaaS Kaixa
+ * Configurações globais do SaaS Balcão PDV
  */
 
 // Caminhos
