@@ -3,15 +3,21 @@
 require_once __DIR__ . '/../app/config.php';
 
 // Buscar planos do Painel (com cache de 10 minutos)
-$planos = [];
-$cacheFile = STORAGE_PATH . '/cache_planos.json';
-$cacheValido = file_exists($cacheFile) && (time() - filemtime($cacheFile)) < 600;
+function fetchPlanosCached(string $tipo, bool $incluirFree = false): array {
+    $cacheKey = $tipo . ($incluirFree ? '_free' : '');
+    $cacheFile = STORAGE_PATH . '/cache_planos_' . $cacheKey . '.json';
+    $cacheValido = file_exists($cacheFile) && (time() - filemtime($cacheFile)) < 600;
 
-if ($cacheValido) {
-    $planos = json_decode(file_get_contents($cacheFile), true) ?: [];
-} elseif (!empty(PAINEL_API_URL)) {
+    if ($cacheValido) {
+        return json_decode(file_get_contents($cacheFile), true) ?: [];
+    }
+
+    if (empty(PAINEL_API_URL)) return [];
+
     try {
-        $ch = curl_init(PAINEL_API_URL . '?action=planos&tipo=saas');
+        $url = PAINEL_API_URL . '?action=planos&tipo=' . urlencode($tipo);
+        if ($incluirFree) $url .= '&incluir_free=1';
+        $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT        => 5,
@@ -22,16 +28,20 @@ if ($cacheValido) {
         if ($result) {
             $data = json_decode($result, true);
             if (!empty($data['ok']) && !empty($data['planos'])) {
-                $planos = $data['planos'];
-                @file_put_contents($cacheFile, json_encode($planos));
+                @file_put_contents($cacheFile, json_encode($data['planos']));
+                return $data['planos'];
             }
         }
     } catch (\Throwable $e) {
         // Silenciar - usa fallback
     }
+    return [];
 }
 
-// Fallback se API falhar
+$planos = fetchPlanosCached('saas');
+$planosDesktop = fetchPlanosCached('desktop', true);
+
+// Fallback se API falhar (planos SaaS)
 if (empty($planos)) {
     $planos = [
         ['nome' => 'Starter',    'slug' => 'saas-starter-mensal',    'preco' => 99.90,  'recursos' => ['descricao' => 'Para quem está começando', 'beneficios' => ['Até 500 produtos','2 usuários','PDV completo','Controle de estoque','Relatórios básicos']]],
@@ -39,6 +49,17 @@ if (empty($planos)) {
         ['nome' => 'Enterprise', 'slug' => 'saas-enterprise-mensal', 'preco' => 399.90, 'recursos' => ['descricao' => 'Para empresas em crescimento', 'beneficios' => ['Produtos ilimitados','Usuários ilimitados','PDV completo','Controle de estoque','Gestão de clientes','Relatórios avançados','Suporte prioritário 24/7']]],
     ];
 }
+
+// Extrair limite de NFC-e do plano Desktop Free (com fallback)
+$limiteNfceFree = 30;
+foreach ($planosDesktop as $p) {
+    if (($p['slug'] ?? '') === 'desktop-free') {
+        $limiteNfceFree = (int)($p['limite_nfce'] ?? 30);
+        break;
+    }
+}
+$limiteNfceFreeTexto = $limiteNfceFree > 0 ? (string)$limiteNfceFree : 'ilimitadas';
+$limiteNfceFreeStat = $limiteNfceFree > 0 ? (string)$limiteNfceFree : '∞';
 
 function slugCurto(string $slug): string {
     return str_replace(['saas-', '-mensal', '-trimestral', '-anual'], '', $slug);
@@ -121,7 +142,7 @@ $canonical = rtrim(APP_URL ?? '', '/') . '/';
         {
           "@type": "Question",
           "name": "O PDV grátis tem limite de vendas?",
-          "acceptedAnswer": {"@type": "Answer", "text": "Não. Você pode registrar quantas vendas quiser no plano grátis. O único limite é a quantidade de NFC-e emitidas por mês (até 30 notas no plano grátis)."}
+          "acceptedAnswer": {"@type": "Answer", "text": "Não. Você pode registrar quantas vendas quiser no plano grátis. O único limite é a quantidade de NFC-e emitidas por mês (até <?= $limiteNfceFreeTexto ?> notas no plano grátis)."}
         },
         {
           "@type": "Question",
@@ -141,7 +162,7 @@ $canonical = rtrim(APP_URL ?? '', '/') . '/';
         {
           "@type": "Question",
           "name": "Preciso pagar para emitir NFC-e?",
-          "acceptedAnswer": {"@type": "Answer", "text": "No plano grátis você pode emitir até 30 NFC-e por mês sem pagar nada. Para emitir mais, oferecemos planos com volume maior. Você precisa apenas do seu Certificado Digital A1 e da Inscrição Estadual."}
+          "acceptedAnswer": {"@type": "Answer", "text": "No plano grátis você pode emitir até <?= $limiteNfceFreeTexto ?> NFC-e por mês sem pagar nada. Para emitir mais, oferecemos planos com volume maior. Você precisa apenas do seu Certificado Digital A1 e da Inscrição Estadual."}
         },
         {
           "@type": "Question",
@@ -478,7 +499,7 @@ $canonical = rtrim(APP_URL ?? '', '/') . '/';
                         <div class="hero-stat-label">Vendas/mês</div>
                     </div>
                     <div class="hero-stat">
-                        <div class="hero-stat-number">30</div>
+                        <div class="hero-stat-number"><?= $limiteNfceFreeStat ?></div>
                         <div class="hero-stat-label">NFC-e/mês</div>
                     </div>
                 </div>
@@ -595,7 +616,7 @@ $canonical = rtrim(APP_URL ?? '', '/') . '/';
                 <article class="feature-card animate-on-scroll">
                     <div class="feature-icon"><i class="fas fa-file-invoice"></i></div>
                     <h3>Emissão de NFC-e</h3>
-                    <p>Emita Nota Fiscal de Consumidor Eletrônica direto do PDV. Até 30 NFC-e por mês no plano grátis. Basta ter Certificado Digital A1.</p>
+                    <p>Emita Nota Fiscal de Consumidor Eletrônica direto do PDV. Até <?= $limiteNfceFreeTexto ?> NFC-e por mês no plano grátis. Basta ter Certificado Digital A1.</p>
                 </article>
             </div>
             <div class="col-md-6 col-lg-4">
@@ -726,7 +747,7 @@ $canonical = rtrim(APP_URL ?? '', '/') . '/';
                             <tr><td class="row-feature">Preço</td><td class="center">R$ 0,00</td><td class="center">A partir de R$ 99,90/mês</td></tr>
                             <tr><td class="row-feature">PDV completo</td><td class="center"><i class="fas fa-check"></i></td><td class="center"><i class="fas fa-check"></i></td></tr>
                             <tr><td class="row-feature">Controle de estoque</td><td class="center"><i class="fas fa-check"></i></td><td class="center"><i class="fas fa-check"></i></td></tr>
-                            <tr><td class="row-feature">Emissão de NFC-e</td><td class="center">Até 30/mês</td><td class="center">Ilimitado</td></tr>
+                            <tr><td class="row-feature">Emissão de NFC-e</td><td class="center"><?= $limiteNfceFree > 0 ? 'Até ' . $limiteNfceFree . '/mês' : 'Ilimitado' ?></td><td class="center">Ilimitado</td></tr>
                             <tr><td class="row-feature">Funciona offline</td><td class="center"><i class="fas fa-check"></i></td><td class="center"><i class="fas fa-xmark"></i></td></tr>
                             <tr><td class="row-feature">Acesso de qualquer lugar</td><td class="center"><i class="fas fa-xmark"></i></td><td class="center"><i class="fas fa-check"></i></td></tr>
                             <tr><td class="row-feature">Sincroniza entre dispositivos</td><td class="center"><i class="fas fa-xmark"></i></td><td class="center"><i class="fas fa-check"></i></td></tr>
@@ -810,7 +831,7 @@ $canonical = rtrim(APP_URL ?? '', '/') . '/';
                 </div>
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">O PDV grátis tem limite de vendas? <i class="fas fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>Não. Você pode registrar quantas vendas quiser no plano grátis, sem qualquer limitação. O único limite é a quantidade de NFC-e (Nota Fiscal de Consumidor Eletrônica) emitidas por mês, que é de até 30 notas. Para emitir mais NFC-e, oferecemos planos pagos com volume maior.</p></div>
+                    <div class="faq-answer"><p>Não. Você pode registrar quantas vendas quiser no plano grátis, sem qualquer limitação. O único limite é a quantidade de NFC-e (Nota Fiscal de Consumidor Eletrônica) emitidas por mês, que é de até <?= $limiteNfceFreeTexto ?> notas. Para emitir mais NFC-e, oferecemos planos pagos com volume maior.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">Funciona sem internet? <i class="fas fa-chevron-down"></i></button>
@@ -826,7 +847,7 @@ $canonical = rtrim(APP_URL ?? '', '/') . '/';
                 </div>
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">Preciso pagar para emitir NFC-e? <i class="fas fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>No plano grátis você pode emitir até 30 NFC-e por mês sem pagar nada. Para emitir um volume maior, oferecemos planos pagos. Você precisa apenas do seu Certificado Digital A1 e da Inscrição Estadual da empresa. O sistema integra direto com a SEFAZ — não há custo adicional por nota emitida.</p></div>
+                    <div class="faq-answer"><p>No plano grátis você pode emitir até <?= $limiteNfceFreeTexto ?> NFC-e por mês sem pagar nada. Para emitir um volume maior, oferecemos planos pagos. Você precisa apenas do seu Certificado Digital A1 e da Inscrição Estadual da empresa. O sistema integra direto com a SEFAZ — não há custo adicional por nota emitida.</p></div>
                 </div>
                 <div class="faq-item animate-on-scroll">
                     <button class="faq-question" onclick="toggleFaq(this)">Como funciona o backup dos dados? <i class="fas fa-chevron-down"></i></button>
