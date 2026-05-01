@@ -34,37 +34,93 @@
 
 /* ---- Header ---- */
 .pdv-header {
-    background: var(--pdv-surface);
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: #fff;
     padding: 10px 20px;
-    border-bottom: 1px solid var(--pdv-border);
+    border-bottom: 3px solid #0f1e3d;
     flex-shrink: 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
-.pdv-header strong {
-    color: var(--pdv-text);
-    font-size: 1.05rem;
+.pdv-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fff;
+    font-size: 1.1rem;
 }
 
-.pdv-header .text-muted {
-    color: var(--pdv-text-muted) !important;
+.pdv-brand i {
+    color: #93c5fd;
+    font-size: 1.3rem;
+}
+
+.pdv-brand strong {
+    color: #fff;
+    font-size: 1.1rem;
+    letter-spacing: 0.3px;
+}
+
+.pdv-header-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.75);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    padding-left: 1rem;
+}
+
+.pdv-header-meta span {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Status bar - "CAIXA LIVRE" estilo Yzidro */
+.pdv-status-bar {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 2rem;
+}
+
+.pdv-status-text {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 6px 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pdv-status-text.ocupado {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fde68a;
+    border-color: rgba(251, 191, 36, 0.4);
 }
 
 .pdv-header .badge {
     font-weight: 500;
     letter-spacing: 0.5px;
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .pdv-header .btn-outline-light {
-    border-color: var(--pdv-border);
-    color: var(--pdv-text-muted);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
     font-size: 0.8rem;
 }
 
 .pdv-header .btn-outline-light:hover {
-    background: var(--pdv-card);
-    color: var(--pdv-text);
-    border-color: var(--pdv-text-muted);
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* ---- Container ---- */
@@ -81,7 +137,59 @@
     flex-direction: column;
     padding: 12px 15px;
     overflow: hidden;
-    gap: 10px;
+    gap: 12px;
+}
+
+/* ---- Painel demarcado (estilo Yzidro) ---- */
+.pdv-panel {
+    background: var(--pdv-surface);
+    border: 1px solid var(--pdv-border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.pdv-panel-label {
+    background: #f1f5f9;
+    color: #1e3a8a;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--pdv-border);
+}
+
+.pdv-panel-label-primary {
+    background: #1e3a8a;
+    color: #fff;
+    border-bottom-color: #0f1e3d;
+}
+
+.pdv-panel-label-success {
+    background: #ecfdf5;
+    color: #065f46;
+    border-bottom-color: #a7f3d0;
+}
+
+.pdv-panel-search {
+    flex-shrink: 0;
+}
+
+.pdv-panel-search .pdv-search {
+    padding: 10px;
+}
+
+.pdv-panel-lista {
+    flex: 1;
+    min-height: 0;
+}
+
+.pdv-panel-lista .pdv-items-container {
+    border: none;
+    border-radius: 0;
+    flex: 1;
 }
 
 /* ---- Busca ---- */
@@ -197,15 +305,16 @@
 .pdv-items-container .table th {
     position: sticky;
     top: 0;
-    background: var(--pdv-card);
+    background: #f1f5f9;
     border-color: var(--pdv-border);
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     padding: 10px 12px;
-    color: var(--pdv-text-muted);
+    color: #1e3a8a;
     z-index: 1;
+    border-bottom: 2px solid #1e3a8a !important;
 }
 
 .pdv-items-container .table td {
@@ -230,40 +339,96 @@
 
 /* ---- Sidebar ---- */
 .pdv-sidebar {
-    width: 310px;
-    background: var(--pdv-surface);
+    width: 320px;
+    background: transparent;
     border-left: 1px solid var(--pdv-border);
-    padding: 15px;
+    padding: 12px 12px;
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    gap: 12px;
+    gap: 10px;
 }
 
 /* ---- Total ---- */
-.pdv-total-box {
-    text-align: center;
-    padding: 20px 15px;
-    background: linear-gradient(135deg, #f8f9fa 0%, rgba(108, 92, 231, 0.08) 100%);
-    border-radius: 12px;
-    border: 1px solid var(--pdv-border);
-}
-
-.pdv-total-box .text-muted {
-    color: var(--pdv-text-muted) !important;
-    font-weight: 600;
-    letter-spacing: 1px;
-    font-size: 0.75rem;
+.pdv-panel-total .pdv-total-box {
+    text-align: right;
+    padding: 14px 18px;
+    background: #fff;
 }
 
 .pdv-total {
-    font-size: 2.4rem;
+    font-size: 2.6rem;
     font-weight: 800;
     color: var(--pdv-green);
-    line-height: 1.2;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.5px;
 }
 
-/* ---- Secoes sidebar ---- */
+.pdv-total-meta {
+    font-size: 0.75rem;
+    color: var(--pdv-text-muted);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+/* Painel resumo (subtotal/desconto) */
+.pdv-panel-resumo {
+    padding: 10px 14px;
+    background: var(--pdv-card);
+}
+
+.pdv-resumo-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    padding: 3px 0;
+}
+
+.pdv-resumo-row span:first-child {
+    color: var(--pdv-text-muted);
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+}
+
+.pdv-resumo-row span:last-child {
+    color: var(--pdv-text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Botão Finalizar grande na sidebar */
+.pdv-btn-finalizar-main {
+    background: var(--pdv-green);
+    border: none;
+    color: #fff;
+    padding: 16px;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(40, 167, 69, 0.25);
+    transition: all 0.2s;
+}
+
+.pdv-btn-finalizar-main:hover {
+    background: var(--pdv-green-soft);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.35);
+    color: #fff;
+}
+
+/* ---- Secoes sidebar (dentro de pdv-panel) ---- */
+.pdv-panel .pdv-section {
+    padding: 8px 10px;
+    margin-bottom: 0;
+}
+
 .pdv-section {
     margin-bottom: 0;
 }
@@ -595,6 +760,92 @@
     background: var(--pdv-card);
     border: 1px solid var(--pdv-border);
     border-radius: 10px;
+}
+
+/* ============================================
+   Barra de Atalhos F-keys (rodape fixo)
+   ============================================ */
+.pdv-keybar {
+    flex-shrink: 0;
+    background: #1e293b;
+    color: #cbd5e1;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 0.8rem;
+    border-top: 2px solid #0f172a;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+}
+
+.pdv-keybar-group {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+}
+
+.pdv-key {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #cbd5e1;
+    white-space: nowrap;
+}
+
+.pdv-key kbd {
+    background: #475569;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    border: 1px solid #64748b;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+    min-width: 36px;
+    text-align: center;
+}
+
+.pdv-key-primary kbd {
+    background: var(--pdv-green);
+    border-color: var(--pdv-green-soft);
+}
+
+.pdv-key-primary {
+    color: #6ee7b7;
+    font-weight: 600;
+}
+
+.pdv-key-danger kbd {
+    background: var(--pdv-red);
+    border-color: #b02a37;
+}
+
+.pdv-key-danger {
+    color: #fca5a5;
+}
+
+@media (max-width: 992px) {
+    .pdv-keybar {
+        font-size: 0.72rem;
+        gap: 0.8rem;
+    }
+    .pdv-keybar-group {
+        gap: 0.7rem;
+    }
+    .pdv-key kbd {
+        min-width: 30px;
+        padding: 1px 6px;
+        font-size: 0.7rem;
+    }
+    .pdv-status-text {
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+        padding: 4px 14px;
+    }
 }
 
 .pdv-pagamento-modal .pdv-resumo > div + div {

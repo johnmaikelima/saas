@@ -267,6 +267,17 @@ function calcularTotal() {
     document.getElementById('descontoDisplay').textContent = formatMoney(desconto);
     document.getElementById('totalVenda').textContent = formatMoney(total);
     document.getElementById('qtdItens').textContent = itens.length;
+
+    const status = document.getElementById('pdvStatus');
+    if (status) {
+        if (itens.length === 0) {
+            status.textContent = 'CAIXA LIVRE';
+            status.classList.remove('ocupado');
+        } else {
+            status.textContent = 'VENDA EM ANDAMENTO';
+            status.classList.add('ocupado');
+        }
+    }
 }
 
 // Abrir modal pagamento

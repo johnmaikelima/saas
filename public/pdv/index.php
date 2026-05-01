@@ -36,14 +36,21 @@ $nfceAmbiente = (int) getConfig('nfce_ambiente', '2');
     <!-- Header PDV -->
     <div class="pdv-header">
         <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <i class="fas fa-cash-register me-2"></i>
-                <strong><?= e($nomeLoja) ?></strong>
-                <span class="ms-3 text-muted small">Operador: <?= e($user['nome']) ?></span>
-                <span class="ms-3 text-muted small">Caixa #<?= $caixa['id'] ?></span>
+            <div class="d-flex align-items-center gap-3">
+                <div class="pdv-brand">
+                    <i class="fas fa-cash-register"></i>
+                    <strong><?= e($nomeLoja) ?></strong>
+                </div>
+                <div class="pdv-header-meta">
+                    <span><i class="fas fa-user me-1"></i><?= e($user['nome']) ?></span>
+                    <span><i class="fas fa-cash-register me-1"></i>Caixa #<?= $caixa['id'] ?></span>
+                </div>
             </div>
-            <div>
-                <span class="badge bg-secondary me-2" id="clock"></span>
+            <div class="pdv-status-bar">
+                <span class="pdv-status-text" id="pdvStatus">CAIXA LIVRE</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-secondary" id="clock"></span>
                 <a href="<?= baseUrl('dashboard/') ?>" class="btn btn-outline-light btn-sm">
                     <i class="fas fa-arrow-left me-1"></i>Voltar
                 </a>
@@ -55,102 +62,118 @@ $nfceAmbiente = (int) getConfig('nfce_ambiente', '2');
         <!-- Area de busca e itens -->
         <div class="pdv-main">
             <!-- Busca de produto -->
-            <div class="pdv-search">
-                <div class="input-group input-group-lg">
-                    <span class="input-group-text">
-                        <i class="fas fa-barcode"></i>
-                    </span>
-                    <input type="text" id="inputBusca" class="form-control"
-                           placeholder="Código de barras, código interno ou nome do produto... (F2)"
-                           autofocus autocomplete="off">
-                    <button class="btn btn-primary" onclick="buscarProduto()">
-                        <i class="fas fa-search"></i>
-                    </button>
+            <div class="pdv-panel pdv-panel-search">
+                <div class="pdv-panel-label"><i class="fas fa-barcode me-1"></i>Código de Barras / Busca</div>
+                <div class="pdv-search">
+                    <div class="input-group input-group-lg">
+                        <input type="text" id="inputBusca" class="form-control"
+                               placeholder="Leia o código de barras ou digite o nome do produto..."
+                               autofocus autocomplete="off">
+                        <button class="btn btn-primary" onclick="buscarProduto()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div id="resultadosBusca" class="pdv-search-results d-none"></div>
                 </div>
-                <!-- Resultados busca -->
-                <div id="resultadosBusca" class="pdv-search-results d-none"></div>
             </div>
 
             <!-- Lista de itens -->
-            <div class="pdv-items-container">
-                <table class="table table-hover mb-0" id="tabelaItens">
-                    <thead>
-                        <tr>
-                            <th width="5%">#</th>
-                            <th width="8%">Código</th>
-                            <th width="32%">Descrição</th>
-                            <th width="12%">Qtd</th>
-                            <th width="13%">Vlr. Unit.</th>
-                            <th width="10%">Desc.</th>
-                            <th width="13%">Subtotal</th>
-                            <th width="7%"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="listaItens">
-                        <tr id="semItens">
-                            <td colspan="8" class="text-center text-muted py-5">
-                                <i class="fas fa-shopping-cart fa-3x mb-3 d-block opacity-25"></i>
-                                Nenhum item adicionado. Leia o código de barras ou pressione F2 para buscar.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="pdv-panel pdv-panel-lista">
+                <div class="pdv-panel-label pdv-panel-label-primary"><i class="fas fa-list me-1"></i>Lista de Produtos</div>
+                <div class="pdv-items-container">
+                    <table class="table table-hover mb-0" id="tabelaItens">
+                        <thead>
+                            <tr>
+                                <th width="5%">Item</th>
+                                <th width="13%">Código</th>
+                                <th width="32%">Descrição</th>
+                                <th width="10%" class="text-center">Qtd</th>
+                                <th width="13%" class="text-end">Vlr. Unit.</th>
+                                <th width="10%" class="text-end">Desc.</th>
+                                <th width="13%" class="text-end">Total</th>
+                                <th width="4%"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaItens">
+                            <tr id="semItens">
+                                <td colspan="8" class="text-center text-muted py-5">
+                                    <i class="fas fa-shopping-cart fa-3x mb-3 d-block opacity-25"></i>
+                                    Nenhum item adicionado. Leia o código de barras ou pressione F2 para buscar.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <!-- Painel lateral -->
         <div class="pdv-sidebar">
             <!-- Total -->
-            <div class="pdv-total-box">
-                <div class="text-muted small">TOTAL</div>
-                <div class="pdv-total" id="totalVenda">R$ 0,00</div>
-                <div class="text-muted small"><span id="qtdItens">0</span> ite(ns)</div>
+            <div class="pdv-panel pdv-panel-total">
+                <div class="pdv-panel-label pdv-panel-label-success"><i class="fas fa-sack-dollar me-1"></i>Subtotal da Venda</div>
+                <div class="pdv-total-box">
+                    <div class="pdv-total" id="totalVenda">R$ 0,00</div>
+                    <div class="pdv-total-meta"><span id="qtdItens">0</span> item(ns)</div>
+                </div>
             </div>
 
             <!-- Desconto geral -->
-            <div class="pdv-section">
-                <label class="form-label text-muted small mb-1">Desconto Geral (F4)</label>
-                <div class="input-group input-group-sm">
-                    <select class="form-select form-control-dark" id="descontoTipo" style="max-width:70px;">
-                        <option value="valor">R$</option>
-                        <option value="percentual">%</option>
-                    </select>
-                    <input type="number" class="form-control form-control-dark" id="descontoGeral"
-                           value="0" min="0" step="0.01" onchange="calcularTotal()">
+            <div class="pdv-panel">
+                <div class="pdv-panel-label">Desconto Geral (F4)</div>
+                <div class="pdv-section">
+                    <div class="input-group">
+                        <select class="form-select form-control-dark" id="descontoTipo" style="max-width:70px;">
+                            <option value="valor">R$</option>
+                            <option value="percentual">%</option>
+                        </select>
+                        <input type="number" class="form-control form-control-dark" id="descontoGeral"
+                               value="0" min="0" step="0.01" onchange="calcularTotal()">
+                    </div>
                 </div>
             </div>
 
             <!-- CPF/CNPJ na nota -->
-            <div class="pdv-section">
-                <label class="form-label text-muted small mb-1">CPF/CNPJ na Nota</label>
-                <input type="text" class="form-control form-control-sm form-control-dark"
-                       id="cpfCnpjNota" placeholder="Opcional" maxlength="18">
-            </div>
-
-            <!-- Atalhos -->
-            <div class="pdv-section">
-                <div class="pdv-shortcuts">
-                    <button class="btn btn-outline-success btn-sm w-100 mb-1" onclick="abrirPagamento()" id="btnFinalizar">
-                        <i class="fas fa-check-circle me-1"></i>Finalizar (F9)
-                    </button>
-                    <button class="btn btn-outline-warning btn-sm w-100 mb-1" onclick="cancelarVenda()">
-                        <i class="fas fa-times-circle me-1"></i>Cancelar Venda (ESC)
-                    </button>
-                    <button class="btn btn-outline-info btn-sm w-100 mb-1" onclick="mostrarAjuda()">
-                        <i class="fas fa-question-circle me-1"></i>Ajuda (F1)
-                    </button>
+            <div class="pdv-panel">
+                <div class="pdv-panel-label">CPF/CNPJ na Nota</div>
+                <div class="pdv-section">
+                    <input type="text" class="form-control form-control-dark"
+                           id="cpfCnpjNota" placeholder="Opcional" maxlength="18">
                 </div>
             </div>
 
-            <!-- Subtotais -->
-            <div class="pdv-section mt-auto">
-                <div class="d-flex justify-content-between small text-muted">
+            <!-- Resumo -->
+            <div class="pdv-panel pdv-panel-resumo mt-auto">
+                <div class="pdv-resumo-row">
                     <span>Subtotal:</span><span id="subtotalDisplay">R$ 0,00</span>
                 </div>
-                <div class="d-flex justify-content-between small text-muted">
+                <div class="pdv-resumo-row">
                     <span>Desconto:</span><span id="descontoDisplay">R$ 0,00</span>
                 </div>
             </div>
+
+            <!-- Botão Finalizar -->
+            <button class="btn btn-success pdv-btn-finalizar-main" onclick="abrirPagamento()" id="btnFinalizar">
+                <i class="fas fa-check-circle me-2"></i>FINALIZAR (F9)
+            </button>
+        </div>
+    </div>
+
+    <!-- Barra de Atalhos (rodape fixo) -->
+    <div class="pdv-keybar">
+        <div class="pdv-keybar-group">
+            <span class="pdv-key"><kbd>F1</kbd> Ajuda</span>
+            <span class="pdv-key"><kbd>F2</kbd> Buscar</span>
+            <span class="pdv-key"><kbd>F4</kbd> Desconto</span>
+            <span class="pdv-key"><kbd>F5</kbd> Excluir Item</span>
+        </div>
+        <div class="pdv-keybar-group">
+            <span class="pdv-key pdv-key-primary"><kbd>F9</kbd> Finalizar</span>
+            <span class="pdv-key"><kbd>F10</kbd> Pagto Misto</span>
+        </div>
+        <div class="pdv-keybar-group">
+            <span class="pdv-key pdv-key-danger"><kbd>ESC</kbd> Cancelar Venda</span>
+            <span class="pdv-key"><kbd>Enter</kbd> Adicionar</span>
         </div>
     </div>
 
