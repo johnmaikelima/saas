@@ -63,6 +63,16 @@ $fingerprint = hash('sha256', ($_SERVER['HTTP_USER_AGENT'] ?? '') . ($_SERVER['H
 $_SESSION['_fingerprint'] = $fingerprint;
 $_SESSION['_last_activity'] = time();
 
-auditLog('impersonate', 'Acesso administrativo via Painel', $tenant['id'], $user['id']);
+// Registrar auditlog (depois, fora da sessão pode falhar)
+try {
+    auditLog('impersonate', 'Acesso administrativo via Painel', $tenant['id'], $user['id']);
+} catch (\Throwable $e) {
+    // Falha silenciosa - não bloqueia o login
+}
 
-redirect('dashboard/');
+// Redirecionar com headers seguros
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+header('Location: ' . APP_URL . '/dashboard/index.php', true, 302);
+exit;
