@@ -58,7 +58,10 @@ $_SESSION['usuario'] = [
 $_SESSION['tenant_id'] = $tenant['id'];
 $_SESSION['impersonate'] = true; // Flag para indicar acesso administrativo
 
-validateSession();
+// Inicializar fingerprint da sessão para impersonate
+$fingerprint = hash('sha256', ($_SERVER['HTTP_USER_AGENT'] ?? '') . ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''));
+$_SESSION['_fingerprint'] = $fingerprint;
+$_SESSION['_last_activity'] = time();
 
 auditLog('impersonate', 'Acesso administrativo via Painel', $tenant['id'], $user['id']);
 
