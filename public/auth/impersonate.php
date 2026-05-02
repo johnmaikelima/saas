@@ -45,9 +45,7 @@ if (!$user) {
     die('Nenhum usuário admin encontrado para esta empresa.');
 }
 
-// Criar sessão
-regenerateSession();
-
+// Definir dados da sessão
 $_SESSION['usuario'] = [
     'id' => $user['id'],
     'nome' => $user['nome'],
@@ -62,6 +60,9 @@ $_SESSION['impersonate'] = true; // Flag para indicar acesso administrativo
 $fingerprint = hash('sha256', ($_SERVER['HTTP_USER_AGENT'] ?? '') . ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''));
 $_SESSION['_fingerprint'] = $fingerprint;
 $_SESSION['_last_activity'] = time();
+
+// Agora regenerar a sessão APÓS definir os dados
+regenerateSession();
 
 // Registrar auditlog (depois, fora da sessão pode falhar)
 try {
