@@ -569,9 +569,12 @@
 #clock {
     font-size: 0.85rem;
     font-family: 'Courier New', monospace;
-    color: var(--pdv-text-muted);
-    background: var(--pdv-card) !important;
-    border: 1px solid var(--pdv-border);
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 5px 10px;
+    letter-spacing: 0.5px;
+    font-weight: 600;
 }
 
 /* ---- Scrollbar ---- */
