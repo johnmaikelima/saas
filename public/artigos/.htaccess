@@ -1,0 +1,15 @@
+# URLs amigáveis para artigos (sem .php na URL)
+RewriteEngine On
+RewriteBase /artigos/
+
+# Bloquear acesso direto ao layout
+RewriteRule ^_layout\.php$ - [F,L]
+
+# Se a URL terminar com .php, remover (301)
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+RewriteRule ^ /artigos/%1 [R=301,L]
+
+# Adicionar .php internamente (sem mudar a URL no browser)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.+)$ $1.php [L]

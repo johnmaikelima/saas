@@ -439,6 +439,7 @@ $canonical = rtrim(APP_URL ?? '', '/') . '/';
                 <a href="#funcionalidades" class="nav-link-custom">Funcionalidades</a>
                 <a href="#como-comecar" class="nav-link-custom">Como Começar</a>
                 <a href="#online" class="nav-link-custom">Versão Online</a>
+                <a href="/artigos/" class="nav-link-custom">Artigos</a>
                 <a href="#faq" class="nav-link-custom">FAQ</a>
                 <a href="/auth/login.php" class="btn-nav-login">Entrar</a>
                 <a href="/download" class="btn-nav-register"><i class="fas fa-download me-1"></i>Baixar Grátis</a>
@@ -450,6 +451,7 @@ $canonical = rtrim(APP_URL ?? '', '/') . '/';
                 <a href="#funcionalidades" class="nav-link-custom" onclick="document.getElementById('navMenu').style.display='none'">Funcionalidades</a>
                 <a href="#como-comecar" class="nav-link-custom" onclick="document.getElementById('navMenu').style.display='none'">Como Começar</a>
                 <a href="#online" class="nav-link-custom" onclick="document.getElementById('navMenu').style.display='none'">Versão Online</a>
+                <a href="/artigos/" class="nav-link-custom" onclick="document.getElementById('navMenu').style.display='none'">Artigos</a>
                 <a href="#faq" class="nav-link-custom" onclick="document.getElementById('navMenu').style.display='none'">FAQ</a>
                 <div class="d-flex gap-2 mt-2">
                     <a href="/auth/login.php" class="btn-nav-login flex-fill text-center">Entrar</a>
