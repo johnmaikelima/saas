@@ -53,3 +53,19 @@ if (isset($_SESSION['usuario']) && ($_SESSION['usuario']['trocar_senha'] ?? fals
         redirect('auth/trocar_senha.php');
     }
 }
+
+// Restringir acesso de operador caixa apenas a PDV, caixa e auth
+if (isset($_SESSION['usuario']) && ($_SESSION['usuario']['perfil'] ?? '') === 'caixa') {
+    $allowedPaths = ['/pdv/', '/caixa/', '/auth/'];
+    $isAllowed = false;
+    foreach ($allowedPaths as $path) {
+        if (str_contains($_currentUri, $path) || str_contains($_currentScript, $path)) {
+            $isAllowed = true;
+            break;
+        }
+    }
+    if (!$isAllowed) {
+        flashError('Sem permissão para acessar essa página.');
+        redirect('pdv/');
+    }
+}

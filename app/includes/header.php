@@ -36,16 +36,19 @@ $caixaAberto = $user ? getCaixaAberto() : null;
         </button>
         <div class="collapse navbar-collapse" id="navbarMain">
             <ul class="navbar-nav me-auto">
+                <?php if (temPerfil('admin', 'gerente')): ?>
                 <li class="nav-item">
                     <a class="nav-link" href="<?= baseUrl('dashboard/') ?>">
                         <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                     </a>
                 </li>
+                <?php endif; ?>
                 <li class="nav-item">
                     <a class="nav-link" href="<?= baseUrl('pdv/') ?>">
                         <i class="fas fa-shopping-cart me-1"></i>PDV
                     </a>
                 </li>
+                <?php if (temPerfil('admin', 'gerente')): ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         <i class="fas fa-boxes-stacked me-1"></i>Cadastros
@@ -76,6 +79,7 @@ $caixaAberto = $user ? getCaixaAberto() : null;
                         <i class="fas fa-file-signature me-1"></i>Orçamentos
                     </a>
                 </li>
+                <?php endif; ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         <i class="fas fa-cash-register me-1"></i>Caixa
