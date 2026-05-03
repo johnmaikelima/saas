@@ -57,9 +57,10 @@ $totalPages = max(1, ceil($total / $perPage));
 $page = max(1, min($page, $totalPages));
 $offset = ($page - 1) * $perPage;
 
-$stmt = $pdo->prepare("SELECT cx.*, u.nome as operador
+$stmt = $pdo->prepare("SELECT cx.*, u.nome as operador, p.nome as pdv_nome
     FROM caixas cx
     LEFT JOIN usuarios u ON u.id = cx.usuario_id
+    LEFT JOIN pdvs p ON p.id = cx.pdv_id
     WHERE cx.tenant_id = ?
     ORDER BY cx.aberto_em DESC
     LIMIT ? OFFSET ?");
@@ -83,7 +84,11 @@ require __DIR__ . '/../../app/includes/header.php';
     <div class="alert alert-success d-flex justify-content-between align-items-center">
         <div>
             <i class="fas fa-door-open me-2"></i>
-            <strong>Caixa #<?= $caixa['id'] ?> aberto</strong> em <?= formatDateTime($caixa['aberto_em']) ?>
+            <strong>Caixa #<?= $caixa['id'] ?> aberto</strong>
+            <?php if (!empty($caixa['pdv_nome'])): ?>
+                <span class="badge bg-primary ms-1"><i class="fas fa-cash-register me-1"></i><?= e($caixa['pdv_nome']) ?></span>
+            <?php endif; ?>
+            em <?= formatDateTime($caixa['aberto_em']) ?>
             | Valor abertura: <?= formatMoney($caixa['valor_abertura']) ?>
         </div>
         <div>
@@ -168,12 +173,19 @@ require __DIR__ . '/../../app/includes/header.php';
     <div class="table-responsive">
         <table class="table table-hover table-sm mb-0">
             <thead class="table-light">
-                <tr><th>#</th><th>Operador</th><th>Abertura</th><th>Fechamento</th><th>Vlr.Abertura</th><th>Vlr.Fechamento</th><th>Diferença</th><th>Status</th></tr>
+                <tr><th>#</th><th>PDV</th><th>Operador</th><th>Abertura</th><th>Fechamento</th><th>Vlr.Abertura</th><th>Vlr.Fechamento</th><th>Diferença</th><th>Status</th></tr>
             </thead>
             <tbody>
             <?php foreach ($pag['data'] as $cx): ?>
                 <tr>
                     <td><?= $cx['id'] ?></td>
+                    <td>
+                        <?php if (!empty($cx['pdv_nome'])): ?>
+                            <span class="badge bg-light text-dark"><?= e($cx['pdv_nome']) ?></span>
+                        <?php else: ?>
+                            <span class="text-muted">-</span>
+                        <?php endif; ?>
+                    </td>
                     <td><?= e($cx['operador']) ?></td>
                     <td><?= formatDateTime($cx['aberto_em']) ?></td>
                     <td><?= $cx['fechado_em'] ? formatDateTime($cx['fechado_em']) : '-' ?></td>
@@ -186,7 +198,7 @@ require __DIR__ . '/../../app/includes/header.php';
                 </tr>
             <?php endforeach; ?>
             <?php if (empty($pag['data'])): ?>
-                <tr><td colspan="8" class="text-center text-muted py-3">Nenhum caixa registrado</td></tr>
+                <tr><td colspan="9" class="text-center text-muted py-3">Nenhum caixa registrado</td></tr>
             <?php endif; ?>
             </tbody>
         </table>

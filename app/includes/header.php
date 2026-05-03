@@ -85,6 +85,10 @@ $caixaAberto = $user ? getCaixaAberto() : null;
                         <li><a class="dropdown-item" href="<?= baseUrl('caixa/abrir.php') ?>"><i class="fas fa-door-open me-2"></i>Abrir Caixa</a></li>
                         <li><a class="dropdown-item" href="<?= baseUrl('caixa/sangria.php') ?>"><i class="fas fa-arrow-up me-2"></i>Sangria</a></li>
                         <li><a class="dropdown-item" href="<?= baseUrl('caixa/suprimento.php') ?>"><i class="fas fa-arrow-down me-2"></i>Suprimento</a></li>
+                        <?php if (temPerfil('admin', 'gerente')): ?>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="<?= baseUrl('pdvs/') ?>"><i class="fas fa-cash-register me-2"></i>PDVs / Terminais</a></li>
+                        <?php endif; ?>
                     </ul>
                 </li>
 

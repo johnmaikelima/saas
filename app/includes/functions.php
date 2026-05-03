@@ -116,7 +116,13 @@ function getCaixaAberto(?int $usuario_id = null): ?array {
     $tid = tenantId();
     if ($tid <= 0) return null;
 
-    $stmt = db()->prepare("SELECT * FROM caixas WHERE tenant_id = ? AND usuario_id = ? AND status = 'aberto' LIMIT 1");
+    $stmt = db()->prepare("
+        SELECT c.*, p.nome as pdv_nome
+        FROM caixas c
+        LEFT JOIN pdvs p ON p.id = c.pdv_id
+        WHERE c.tenant_id = ? AND c.usuario_id = ? AND c.status = 'aberto'
+        LIMIT 1
+    ");
     $stmt->execute([$tid, $usuario_id]);
     return $stmt->fetch() ?: null;
 }
