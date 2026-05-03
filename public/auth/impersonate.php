@@ -78,6 +78,10 @@ try {
 
 error_log("IMPERSONATE: Redirecionando para dashboard (relativo)");
 
+// Garantir que a sessão seja salva ANTES do redirect
+session_write_close();
+error_log("IMPERSONATE: session_write_close() chamado");
+
 // Redirecionar com headers seguros (RELATIVO, não absoluto)
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
