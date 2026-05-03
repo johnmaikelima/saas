@@ -5,6 +5,9 @@ autoMigrate();
 
 // Já logado?
 if (isset($_SESSION['usuario']) && isset($_SESSION['tenant_id'])) {
+    if (($_SESSION['usuario']['perfil'] ?? '') === 'caixa') {
+        redirect('pdv/');
+    }
     redirect('dashboard/');
 }
 
@@ -127,7 +130,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bloqueado) {
                         if ($user['trocar_senha']) {
                             redirect('auth/trocar_senha.php');
                         } else {
-                            redirect('dashboard/');
+                            // Operador caixa vai direto para PDV (abrir caixa se não estiver aberto)
+                            if ($user['perfil'] === 'caixa') {
+                                redirect('pdv/');
+                            } else {
+                                redirect('dashboard/');
+                            }
                         }
                     }
                 }
