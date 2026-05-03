@@ -36,7 +36,7 @@ if (session_status() === PHP_SESSION_NONE) {
         'gc_maxlifetime' => SESSION_LIFETIME,
         'cookie_httponly' => true,
         'cookie_secure' => $isSecure,
-        'cookie_samesite' => 'Strict',
+        'cookie_samesite' => 'Lax',
         'use_strict_mode' => true,
         'use_only_cookies' => true,
     ]);
