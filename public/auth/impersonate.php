@@ -56,13 +56,10 @@ $_SESSION['usuario'] = [
 $_SESSION['tenant_id'] = $tenant['id'];
 $_SESSION['impersonate'] = true; // Flag para indicar acesso administrativo
 
-// Inicializar fingerprint da sessão para impersonate
+// Inicializar fingerprint e last_activity para evitar destruição de sessão
 $fingerprint = hash('sha256', ($_SERVER['HTTP_USER_AGENT'] ?? '') . ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''));
 $_SESSION['_fingerprint'] = $fingerprint;
 $_SESSION['_last_activity'] = time();
-
-// Agora regenerar a sessão APÓS definir os dados
-regenerateSession();
 
 // Registrar auditlog (depois, fora da sessão pode falhar)
 try {
