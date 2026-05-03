@@ -76,11 +76,11 @@ try {
     error_log("IMPERSONATE: Erro ao registrar auditlog: " . $e->getMessage());
 }
 
-error_log("IMPERSONATE: Redirecionando para " . APP_URL . '/dashboard/index.php');
+error_log("IMPERSONATE: Redirecionando para dashboard (relativo)");
 
-// Redirecionar com headers seguros
+// Redirecionar com headers seguros (RELATIVO, não absoluto)
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
-header('Location: ' . APP_URL . '/dashboard/index.php', true, 302);
+header('Location: /dashboard/index.php', true, 302);
 exit;
