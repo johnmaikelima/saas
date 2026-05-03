@@ -46,6 +46,8 @@ if (!$user) {
 }
 
 // Definir dados da sessão
+error_log("IMPERSONATE: Definindo SESSION para usuario_id={$user['id']}, tenant_id={$tenant['id']}");
+
 $_SESSION['usuario'] = [
     'id' => $user['id'],
     'nome' => $user['nome'],
@@ -54,19 +56,27 @@ $_SESSION['usuario'] = [
     'trocar_senha' => false,
 ];
 $_SESSION['tenant_id'] = $tenant['id'];
-$_SESSION['impersonate'] = true; // Flag para indicar acesso administrativo
+$_SESSION['impersonate'] = true;
+
+error_log("IMPERSONATE: SESSION depois de definir: " . json_encode($_SESSION, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR));
 
 // Inicializar fingerprint e last_activity para evitar destruição de sessão
 $fingerprint = hash('sha256', ($_SERVER['HTTP_USER_AGENT'] ?? '') . ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''));
 $_SESSION['_fingerprint'] = $fingerprint;
 $_SESSION['_last_activity'] = time();
 
+error_log("IMPERSONATE: Fingerprint definido: " . $fingerprint);
+error_log("IMPERSONATE: User-Agent: " . ($_SERVER['HTTP_USER_AGENT'] ?? 'vazio'));
+
 // Registrar auditlog (depois, fora da sessão pode falhar)
 try {
     auditLog('impersonate', 'Acesso administrativo via Painel', $tenant['id'], $user['id']);
+    error_log("IMPERSONATE: AuditLog registrado com sucesso");
 } catch (\Throwable $e) {
-    // Falha silenciosa - não bloqueia o login
+    error_log("IMPERSONATE: Erro ao registrar auditlog: " . $e->getMessage());
 }
+
+error_log("IMPERSONATE: Redirecionando para " . APP_URL . '/dashboard/index.php');
 
 // Redirecionar com headers seguros
 header('Cache-Control: no-cache, no-store, must-revalidate');
