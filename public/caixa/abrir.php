@@ -82,56 +82,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require __DIR__ . '/../../app/includes/header.php';
 ?>
 
-<h5 class="page-title"><i class="fas fa-door-open me-2"></i>Abrir Caixa</h5>
+<div class="d-flex flex-column align-items-center">
+    <h5 class="page-title text-center mb-3"><i class="fas fa-door-open me-2"></i>Abrir Caixa</h5>
 
-<?php if (empty($pdvs) && temPerfil('admin', 'gerente')): ?>
-    <div class="alert alert-warning">
-        <i class="fas fa-exclamation-triangle me-1"></i>
-        Nenhum PDV cadastrado. Recomendamos <a href="<?= baseUrl('pdvs/form.php') ?>">cadastrar pelo menos um PDV</a> para identificar os terminais do estabelecimento.
-    </div>
-<?php endif; ?>
+    <?php if (empty($pdvs) && temPerfil('admin', 'gerente')): ?>
+        <div class="alert alert-warning" style="max-width:500px; width:100%;">
+            <i class="fas fa-exclamation-triangle me-1"></i>
+            Nenhum PDV cadastrado. Recomendamos <a href="<?= baseUrl('pdvs/form.php') ?>">cadastrar pelo menos um PDV</a> para identificar os terminais do estabelecimento.
+        </div>
+    <?php endif; ?>
 
-<div class="card shadow-sm" style="max-width:500px;">
-    <div class="card-body">
-        <form method="POST">
-            <?= csrfField() ?>
+    <div class="card shadow-sm" style="max-width:500px; width:100%;">
+        <div class="card-body">
+            <form method="POST">
+                <?= csrfField() ?>
 
-            <div class="mb-3">
-                <label class="form-label">Operador</label>
-                <input type="text" class="form-control" value="<?= e($user['nome']) ?>" readonly>
-            </div>
-
-            <?php if (!empty($pdvs)): ?>
-            <div class="mb-3">
-                <label class="form-label">PDV / Terminal <span class="text-danger">*</span></label>
-                <select name="pdv_id" class="form-select" required>
-                    <option value="">Selecione um PDV...</option>
-                    <?php foreach ($pdvs as $p): ?>
-                        <?php $emUso = !empty($p['caixa_aberto_id']); ?>
-                        <option value="<?= $p['id'] ?>" <?= $emUso ? 'disabled' : '' ?>>
-                            <?= e($p['nome']) ?>
-                            <?php if ($emUso): ?>
-                                (em uso por <?= e($p['operador_atual']) ?>)
-                            <?php endif; ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <small class="text-muted">PDVs em uso aparecem desabilitados</small>
-            </div>
-            <?php endif; ?>
-
-            <div class="mb-3">
-                <label class="form-label">Valor de Abertura (dinheiro em caixa)</label>
-                <div class="input-group">
-                    <span class="input-group-text">R$</span>
-                    <input type="number" class="form-control" name="valor_abertura" step="0.01" min="0" value="0" autofocus>
+                <div class="mb-3">
+                    <label class="form-label">Operador</label>
+                    <input type="text" class="form-control" value="<?= e($user['nome']) ?>" readonly>
                 </div>
-            </div>
 
-            <button type="submit" class="btn btn-success w-100">
-                <i class="fas fa-door-open me-1"></i>Abrir Caixa
-            </button>
-        </form>
+                <?php if (!empty($pdvs)): ?>
+                <div class="mb-3">
+                    <label class="form-label">PDV / Terminal <span class="text-danger">*</span></label>
+                    <select name="pdv_id" class="form-select" required>
+                        <option value="">Selecione um PDV...</option>
+                        <?php foreach ($pdvs as $p): ?>
+                            <?php $emUso = !empty($p['caixa_aberto_id']); ?>
+                            <option value="<?= $p['id'] ?>" <?= $emUso ? 'disabled' : '' ?>>
+                                <?= e($p['nome']) ?>
+                                <?php if ($emUso): ?>
+                                    (em uso por <?= e($p['operador_atual']) ?>)
+                                <?php endif; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <small class="text-muted">PDVs em uso aparecem desabilitados</small>
+                </div>
+                <?php endif; ?>
+
+                <div class="mb-3">
+                    <label class="form-label">Valor de Abertura (dinheiro em caixa)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">R$</span>
+                        <input type="number" class="form-control" name="valor_abertura" step="0.01" min="0" value="0" autofocus>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">
+                    <i class="fas fa-door-open me-1"></i>Abrir Caixa
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 
