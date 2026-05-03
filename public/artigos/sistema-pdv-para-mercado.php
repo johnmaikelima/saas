@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/_helpers.php';
 $artigo = [
     'slug' => 'sistema-pdv-para-mercado',
     'titulo' => 'Sistema PDV para Mercado e Mercadinho: Guia Completo 2026',

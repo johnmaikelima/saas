@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/_helpers.php';
 $artigo = [
     'slug' => 'sistema-pdv-para-loja-de-roupas',
     'titulo' => 'Sistema PDV para Loja de Roupas e Boutique 2026',

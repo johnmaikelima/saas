@@ -13,6 +13,7 @@
  */
 
 require_once __DIR__ . '/../../app/config.php';
+require_once __DIR__ . '/_helpers.php';
 
 $baseUrl = rtrim(APP_URL ?? '', '/');
 $canonicalArtigo = $baseUrl . '/artigos/' . $artigo['slug'];
@@ -32,8 +33,6 @@ $outrosArtigos = [
 ];
 $relacionados = array_filter($outrosArtigos, fn($o) => $o['slug'] !== $artigo['slug']);
 $relacionados = array_slice($relacionados, 0, 3);
-
-function eAttr($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

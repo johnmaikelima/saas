@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/_helpers.php';
 $artigo = [
     'slug' => 'sistema-pdv-para-padaria',
     'titulo' => 'Sistema PDV para Padaria: Guia para Aumentar Vendas em 2026',
