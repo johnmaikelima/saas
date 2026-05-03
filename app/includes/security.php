@@ -147,18 +147,18 @@ function regenerateSession(): void {
  * Verificar se a sessão é válida (anti session fixation/hijacking).
  */
 function validateSession(): bool {
-    // Verificar fingerprint do navegador
-    $fingerprint = hash('sha256', ($_SERVER['HTTP_USER_AGENT'] ?? '') . ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''));
+    // Pular validação de fingerprint para sessões de impersonate (pode ter headers diferentes)
+    if (!isset($_SESSION['impersonate']) || !$_SESSION['impersonate']) {
+        // Verificar fingerprint do navegador apenas para sessões normais
+        $fingerprint = hash('sha256', ($_SERVER['HTTP_USER_AGENT'] ?? '') . ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''));
 
-    if (!isset($_SESSION['_fingerprint'])) {
-        $_SESSION['_fingerprint'] = $fingerprint;
-        return true;
-    }
-
-    if ($_SESSION['_fingerprint'] !== $fingerprint) {
-        // Sessão possivelmente sequestrada
-        session_destroy();
-        return false;
+        if (!isset($_SESSION['_fingerprint'])) {
+            $_SESSION['_fingerprint'] = $fingerprint;
+        } elseif ($_SESSION['_fingerprint'] !== $fingerprint) {
+            // Sessão possivelmente sequestrada
+            session_destroy();
+            return false;
+        }
     }
 
     // Verificar expiração da sessão (além do cookie)
